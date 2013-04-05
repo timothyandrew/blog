@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: mobile | Timothy's Blog]]></title>
+  <link href="http://blog.timothyandrew.net/blog/categories/mobile/atom.xml" rel="self"/>
+  <link href="http://blog.timothyandrew.net/"/>
+  <updated>2013-04-05T23:09:15+05:30</updated>
+  <id>http://blog.timothyandrew.net/</id>
+  <author>
+    <name><![CDATA[Timothy Andrew]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Using Swipe.js to swipe between pages of a web app]]></title>
+    <link href="http://blog.timothyandrew.net/blog/2013/04/05/using-swipe-dot-js-to-swipe-between-pages-of-a-web-app/"/>
+    <updated>2013-04-05T21:45:00+05:30</updated>
+    <id>http://blog.timothyandrew.net/blog/2013/04/05/using-swipe-dot-js-to-swipe-between-pages-of-a-web-app</id>
+    <content type="html"><![CDATA[<p>I was working with <a href="http://deobald.ca/">Steven</a> on <a href="http://github.com/deobald/jok]">Jok</a> today.</p>
+
+<p>We were converting a two page (well 3, actually) page web application into a single page application that let you swipe between pages on mobile device but worked the same on a desktop browser.</p>
+
+<p>Here's how that's done.</p>
+
+<p>First, download the <a href="http://swipejs.com/">Swipe.js</a> plugin.</p>
+
+<p>You need the markup for all your pages in a single HTML file, wrapped with two <code>divs</code> that Swipe uses.</p>
+
+<p>```html</p>
+
+<div id='slider' class='swipe'>
+  <div class='swipe-wrap'>
+    <div class="page">
+      Page 1
+    </div>
+    <div class="page">
+      Page 2
+    </div>
+  </div>
+</div>
+
+
+<p>```</p>
+
+<p>Next, we need to setup Swipe.js.</p>
+
+<p>```html</p>
+
+<script type="text/javascript">
+    var mySwipe = Swipe(document.getElementById('slider'));
+    mySwipe.setup();
+</script>
+
+
+<p>```</p>
+
+<p>We need some CSS styles too.</p>
+
+<p>```css
+.swipe {
+  overflow: hidden;
+  visibility: hidden;
+  position: relative;
+}
+.swipe-wrap {
+  overflow: hidden;
+  position: relative;
+}
+.swipe-wrap > div {
+  float:left;
+  width:100%;
+  min-height: 100%;
+  position: relative;
+}
+html,body {</p>
+
+<pre><code>height: 100%;
+margin: 0px;
+padding: 0px;
+</code></pre>
+
+<p>}
+```</p>
+
+<p>We've added styles to make each page have a <code>100%</code> height, so that our background-color spans the entire page.</p>
+
+<p>This should allow page navigating between the pages by swiping on a mobile device.<br/>
+On a desktop, though, there's no way to switch between pages.</p>
+
+<p>Swipe.js doesn't detect swipe-like events from the mouse, so we need to add buttons to the page for navigation.</p>
+
+<p>```html</p>
+
+<div id="left-arrow" 
+     style="font-size: 50px; position: absolute; left: 0%; top: 50%; z-index: 1000;"
+     onclick="javascript:window.mySwipe.prev();">
+&lt;
+</div>
+
+
+<div id="right-arrow" 
+     style="font-size: 50px; position: absolute; right: 0%; top: 50%; z-index: 1000;"
+     onclick="javascript:window.mySwipe.next();">
+&gt;
+</div>
+
+
+<p>```</p>
+
+<p>This adds a button on each side of the page which allow navigating to the previous/next pages.</p>
+
+<p>Pretty straight-forward so far. There's two problems with this approach, though.</p>
+
+<ul>
+<li>When a page is taller than the height of the viewport, a scrollbar shows up on all pages.<br/>
+<em>This is not too bad. We could probably live with this.</em></li>
+<li>If we scroll way down on a page, and then switch page, the new page will preserve the scroll position of the previous page. This can be particularly annoying if you have one really tall page and another short page.</li>
+</ul>
+
+
+<p>We solved this problem by caching the scroll position for each page, and then scrolling to that position when the page was changed.</p>
+
+<p>To hook into the page change event, we need to pass a function into the Swipe.js initializer.</p>
+
+<p>```javascript</p>
+
+<pre><code>var body = document.getElementsByTagName("body")[0];
+var otherScroll = 0;
+
+var cb = function(index, element) {
+  oldScroll = otherScroll;
+  otherScroll = body.scrollTop;
+  body.scrollTop = oldScroll;
+};
+
+var mySwipe = Swipe(document.getElementById('slider'), { callback: cb });
+mySwipe.setup();
+</code></pre>
+
+<p>```</p>
+
+<p>This works okay for a two page app. If you've got more pages, you'll have to cache the scroll positions for each page.</p>
+
+<p>```javascript</p>
+
+<pre><code>var body = document.getElementsByTagName("body")[0];
+var positions = [];
+var currentPage = 0;
+
+var cb = function(index, element) {
+  positions[currentPage] = body.scrollTop;
+  body.scrollTop = positions[index] || 0;
+  currentPage = index;
+};
+
+var mySwipe = Swipe(document.getElementById('slider'), { callback: cb });
+mySwipe.setup();
+</code></pre>
+
+<p>```</p>
+]]></content>
+  </entry>
+  
+</feed>

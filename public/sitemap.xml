@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
+    <url>
+        <loc>
+            http://blog.timothyandrew.net/blog/2013/04/05/using-swipe-dot-js-to-swipe-between-pages-of-a-web-app/
+        </loc>
+        <lastmod>2013-04-05T22:55:53+05:30</lastmod>
+    </url>
+    <url>
+        <loc>http://blog.timothyandrew.net/blog/archives/</loc>
+        <lastmod>2013-04-05T22:55:53+05:30</lastmod>
+    </url>
+    <url>
+        <loc>http://blog.timothyandrew.net/</loc>
+        <lastmod>2013-04-05T22:55:53+05:30</lastmod>
+    </url>
+    <url>
+        <loc>http://blog.timothyandrew.net/robots.txt</loc>
+        <lastmod>2013-04-05T21:42:08+05:30</lastmod>
+    </url>
+</urlset>
