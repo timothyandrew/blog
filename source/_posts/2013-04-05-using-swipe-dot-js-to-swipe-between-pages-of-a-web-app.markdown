@@ -6,7 +6,7 @@ comments: true
 categories: [howto, js, html, mobile, swipe.js]
 ---
 
-I was working with [Steven](http://deobald.ca/) on [Jok](http://github.com/deobald/jok]) today.   
+I was working with [Steven](http://deobald.ca/) on [Jok](http://github.com/deobald/jok) today.   
 
 We were converting a two page (well 3, actually) page web application into a single page application that let you swipe between pages on mobile device but worked the same on a desktop browser.  
 

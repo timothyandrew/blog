@@ -4,7 +4,7 @@
   <title><![CDATA[Category: swipe.js | Timothy's Blog]]></title>
   <link href="http://blog.timothyandrew.net/blog/categories/swipe-dot-js/atom.xml" rel="self"/>
   <link href="http://blog.timothyandrew.net/"/>
-  <updated>2013-04-05T23:41:21+05:30</updated>
+  <updated>2013-04-05T23:42:15+05:30</updated>
   <id>http://blog.timothyandrew.net/</id>
   <author>
     <name><![CDATA[Timothy Andrew]]></name>
@@ -18,7 +18,7 @@
     <link href="http://blog.timothyandrew.net/blog/2013/04/05/using-swipe-dot-js-to-swipe-between-pages-of-a-web-app/"/>
     <updated>2013-04-05T21:45:00+05:30</updated>
     <id>http://blog.timothyandrew.net/blog/2013/04/05/using-swipe-dot-js-to-swipe-between-pages-of-a-web-app</id>
-    <content type="html"><![CDATA[<p>I was working with <a href="http://deobald.ca/">Steven</a> on <a href="http://github.com/deobald/jok]">Jok</a> today.</p>
+    <content type="html"><![CDATA[<p>I was working with <a href="http://deobald.ca/">Steven</a> on <a href="http://github.com/deobald/jok">Jok</a> today.</p>
 
 <p>We were converting a two page (well 3, actually) page web application into a single page application that let you swipe between pages on mobile device but worked the same on a desktop browser.</p>
 
