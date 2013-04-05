@@ -65,7 +65,7 @@ html,body {
 
 We've added styles to make each page have a `100%` height, so that our background-color spans the entire page.
 
-This should allow page navigating between the pages by swiping on a mobile device.  
+This should allow navigating between the pages by swiping on a mobile device.  
 On a desktop, though, there's no way to switch between pages.
 
 Swipe.js doesn't detect swipe-like events from the mouse, so we need to add buttons to the page for navigation.
