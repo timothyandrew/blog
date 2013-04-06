@@ -4,7 +4,7 @@
   <title><![CDATA[Category: mobile | Timothy's Blog]]></title>
   <link href="http://blog.timothyandrew.net/blog/categories/mobile/atom.xml" rel="self"/>
   <link href="http://blog.timothyandrew.net/"/>
-  <updated>2013-04-06T11:21:30+05:30</updated>
+  <updated>2013-04-07T01:14:46+05:30</updated>
   <id>http://blog.timothyandrew.net/</id>
   <author>
     <name><![CDATA[Timothy Andrew]]></name>
@@ -12,6 +12,103 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Using Asana From a Cheap Nokia Phone]]></title>
+    <link href="http://blog.timothyandrew.net/blog/2013/04/06/using-asana-from-a-cheap-nokia-phone/"/>
+    <updated>2013-04-06T23:29:00+05:30</updated>
+    <id>http://blog.timothyandrew.net/blog/2013/04/06/using-asana-from-a-cheap-nokia-phone</id>
+    <content type="html"><![CDATA[<p>I love <a href="http://asana.com/">Asana</a>. Its made me a lot more organized than I used to be.</p>
+
+<p>I'd love to be able to check my tasks when I'm not at a computer, but my phone looks like this.</p>
+
+<p><img src="/images/c2-01.jpg" alt="Nokia C2-01" /></p>
+
+<p>There's no way the Asana app will load on its Opera Mini browser.</p>
+
+<p>It does have email, though. And Asana lets me <a href="http://asana.com/guide/tags-email/email-basics">send tasks</a> in via email.</p>
+
+<p>Unfortunately, there seems to be no way to actually <em>view</em> all your tasks from a phone like this.</p>
+
+<p><strong>Until now.</strong></p>
+
+<p>I wrote a small <a href="http://sinatrarb.com/">Sinatra</a> app that pulls my tasks from Asana and displays them on a simple HTML page. It's very rough around the edges, but works well enough for my needs. You can grab the code and set it up <a href="http://github.com/timothyandrew/asana-light">here</a>.</p>
+
+<p>There is <strong><em>no</em> authentication</strong> yet, so anyone with a link can view your tasks.</p>
+
+<p>Read on for an explanation of how it works.</p>
+
+<!-- more -->
+
+
+<p>Luckily for us, there's a ruby interface to Asana's REST API in the form of the <a href="http://github.com/rbright/asana">asana gem</a>, which we can use to pull all our tasks from Asana.</p>
+
+<p>First, we need to get the API key for our Asana account for authentication.</p>
+
+<ul>
+<li>Login to Asana</li>
+<li>Visit this link: <a href="http://app.asana.com/-/account_api">http://app.asana.com/-/account_api</a></li>
+<li>Copy the API key.</li>
+</ul>
+
+
+<p>We use this to set up the gem.</p>
+
+<p>```ruby
+configure do
+  Asana.configure do |client|</p>
+
+<pre><code>client.api_key = "YOUR_API_KEY"
+</code></pre>
+
+<p>  end
+end
+```</p>
+
+<p>Next, we need to get all your tasks. We get all the tasks assigned to you from each of your workspaces and put them all in one array.</p>
+
+<p>```ruby
+user = Asana::User.me
+workspaces = Asana::Workspace.all
+tasks = workspaces.reduce([]) do |memo, workspace|</p>
+
+<pre><code>memo &lt;&lt; workspace.tasks(user.id).map(&amp;:name)
+memo
+</code></pre>
+
+<p>end.flatten
+```</p>
+
+<p>We send all this to this ERB template:</p>
+
+<p>```erb
+<html><body></p>
+
+<pre><code>&lt;ul&gt;
+&lt;% tasks.each do |task| %&gt;
+    &lt;li&gt;&lt;%= task %&gt;&lt;/li&gt;
+&lt;% end %&gt;
+&lt;/ul&gt;
+</code></pre>
+
+<p></body></html>
+```</p>
+
+<p>Which renders the tasks in a format any browser can comfortably read.<br/>
+And that's pretty much all the code that's necessary.</p>
+
+<hr />
+
+<p>There are a lot of ways this can be improved, I'm sure. Off the top of my head:</p>
+
+<ul>
+<li>Group tasks by workspace</li>
+<li>Sort tasks by date</li>
+<li>Add authentication. Anyone who visits the URL shouldn't be able to see all your tasks.</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Using Swipe.js to swipe between pages of a web app]]></title>
