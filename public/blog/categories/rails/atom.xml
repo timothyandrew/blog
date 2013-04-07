@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: rails | Timothy's Blog]]></title>
+  <link href="http://blog.timothyandrew.net/blog/categories/rails/atom.xml" rel="self"/>
+  <link href="http://blog.timothyandrew.net/"/>
+  <updated>2013-04-08T00:45:45+05:30</updated>
+  <id>http://blog.timothyandrew.net/</id>
+  <author>
+    <name><![CDATA[Timothy Andrew]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Use Lambdas for Date-based Rails Scopes]]></title>
+    <link href="http://blog.timothyandrew.net/blog/2013/04/08/use-lambdas-for-date-based-rails-scopes/"/>
+    <updated>2013-04-08T00:26:00+05:30</updated>
+    <id>http://blog.timothyandrew.net/blog/2013/04/08/use-lambdas-for-date-based-rails-scopes</id>
+    <content type="html"><![CDATA[<p>A scope allows you to specify an ARel query that can be used as a method call to the model (or association objects).</p>
+
+<p>```ruby
+class Item
+  scope :delivered, where(delivered: true)
+end</p>
+
+<p>Item.delivered.to_sql                     # SELECT "items".<em> FROM "items"  WHERE "items"."delivered" = 't'
+Item.where(price: 2000).delivered.to_sql  # SELECT "items".</em> FROM "items"  WHERE "items"."price" = 2000 AND "items"."delivered" = 't'
+```</p>
+
+<p>There's a problem if we try using a scope for a relative date, though.</p>
+
+<p><code>ruby
+class Item
+  scope :expired, where("expiry_date &lt; ?", Date.today)
+end
+</code></p>
+
+<p>This code gets evaluated when the server is started, and the <em>output</em> of <code>Date.today</code> is stored in the scope.</p>
+
+<p>That scope is equivalent to the following:</p>
+
+<p>```ruby
+class Item
+  def self.expired</p>
+
+<pre><code>where("expiry_date &lt; ?", "2013-04-01")
+</code></pre>
+
+<p>  end
+end
+```</p>
+
+<p>The date is hardcoded in there, and will not be changed until the scope is re-evaluated.<br/>
+This typically happens only when the server is restarted.</p>
+
+<p>To get around this problem, use a lambda when defining date (or time) based scopes. This will force the evaluation of the scope each time it is <em>called</em>.</p>
+
+<p><code>ruby
+class Item
+  scope :expired, lambda { where("expiry_date &lt; ?", Date.today) }
+end
+</code></p>
+]]></content>
+  </entry>
+  
+</feed>

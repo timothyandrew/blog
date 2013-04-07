@@ -9,7 +9,13 @@
   <meta name="author" content="Timothy Andrew">
 
   
-  <meta name="description" content="I love Asana. Its made me a lot more organized than I used to be. I&#8217;d love to be able to check my tasks when I&#8217;m not at a computer, but &hellip;">
+  <meta name="description" content="A scope allows you to specify an ARel query that can be used as a method call to the model (or association objects). 1
+2
+3
+4
+5
+6
+class Item scope : &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -73,6 +79,99 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/04/08/use-lambdas-for-date-based-rails-scopes/">Use Lambdas for Date-based Rails Scopes</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-08T00:26:00+05:30" pubdate data-updated="true">Apr 8<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>A scope allows you to specify an ARel query that can be used as a method call to the model (or association objects).</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Item</span>
+</span><span class='line'>  <span class="n">scope</span> <span class="ss">:delivered</span><span class="p">,</span> <span class="n">where</span><span class="p">(</span><span class="ss">delivered</span><span class="p">:</span> <span class="kp">true</span><span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">Item</span><span class="o">.</span><span class="n">delivered</span><span class="o">.</span><span class="n">to_sql</span>                     <span class="c1"># SELECT &quot;items&quot;.* FROM &quot;items&quot;  WHERE &quot;items&quot;.&quot;delivered&quot; = &#39;t&#39;</span>
+</span><span class='line'><span class="no">Item</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">price</span><span class="p">:</span> <span class="mi">2000</span><span class="p">)</span><span class="o">.</span><span class="n">delivered</span><span class="o">.</span><span class="n">to_sql</span>  <span class="c1"># SELECT &quot;items&quot;.* FROM &quot;items&quot;  WHERE &quot;items&quot;.&quot;price&quot; = 2000 AND &quot;items&quot;.&quot;delivered&quot; = &#39;t&#39; </span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>There&#8217;s a problem if we try using a scope for a relative date, though.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Item</span>
+</span><span class='line'>  <span class="n">scope</span> <span class="ss">:expired</span><span class="p">,</span> <span class="n">where</span><span class="p">(</span><span class="s2">&quot;expiry_date &lt; ?&quot;</span><span class="p">,</span> <span class="no">Date</span><span class="o">.</span><span class="n">today</span><span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This code gets evaluated when the server is started, and the <em>output</em> of <code>Date.today</code> is stored in the scope.</p>
+
+<p>That scope is equivalent to the following:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Item</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">expired</span>
+</span><span class='line'>    <span class="n">where</span><span class="p">(</span><span class="s2">&quot;expiry_date &lt; ?&quot;</span><span class="p">,</span> <span class="s2">&quot;2013-04-01&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The date is hardcoded in there, and will not be changed until the scope is re-evaluated.<br/>
+This typically happens only when the server is restarted.</p>
+
+<p>To get around this problem, use a lambda when defining date (or time) based scopes. This will force the evaluation of the scope each time it is <em>called</em>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Item</span>
+</span><span class='line'>  <span class="n">scope</span> <span class="ss">:expired</span><span class="p">,</span> <span class="nb">lambda</span> <span class="p">{</span> <span class="n">where</span><span class="p">(</span><span class="s2">&quot;expiry_date &lt; ?&quot;</span><span class="p">,</span> <span class="no">Date</span><span class="o">.</span><span class="n">today</span><span class="p">)</span> <span class="p">}</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -368,6 +467,10 @@ On a desktop, though, there&#8217;s no way to switch between pages.</p>
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/04/08/use-lambdas-for-date-based-rails-scopes/">Use Lambdas for Date-based Rails Scopes</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/04/06/using-asana-from-a-cheap-nokia-phone/">Using Asana From a Cheap Nokia Phone</a>

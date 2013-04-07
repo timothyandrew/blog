@@ -13,12 +13,18 @@
         <lastmod>2013-04-07T01:13:49+05:30</lastmod>
     </url>
     <url>
+        <loc>
+            http://blog.timothyandrew.net/blog/2013/04/08/use-lambdas-for-date-based-rails-scopes/
+        </loc>
+        <lastmod>2013-04-08T00:45:38+05:30</lastmod>
+    </url>
+    <url>
         <loc>http://blog.timothyandrew.net/blog/archives/</loc>
-        <lastmod>2013-04-07T01:13:49+05:30</lastmod>
+        <lastmod>2013-04-08T00:45:38+05:30</lastmod>
     </url>
     <url>
         <loc>http://blog.timothyandrew.net/</loc>
-        <lastmod>2013-04-07T01:13:49+05:30</lastmod>
+        <lastmod>2013-04-08T00:45:38+05:30</lastmod>
     </url>
     <url>
         <loc>http://blog.timothyandrew.net/robots.txt</loc>
