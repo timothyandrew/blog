@@ -5,17 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Use Lambdas for Date-based Rails Scopes - Timothy's Blog</title>
+  <title>Changing the Server Timeout on EngineYard - Timothy's Blog</title>
   <meta name="author" content="Timothy Andrew">
 
   
-  <meta name="description" content="A scope allows you to specify an ARel query that can be used as a method call to the model (or association objects). 1
-2
-3
-4
-5
-6
-class Item scope : &hellip;">
+  <meta name="description" content="While working on survey-web today, we were stuck for a really long time trying to figure out this problem. Unless otherwise specified, image uploads &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -24,7 +18,7 @@ class Item scope : &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.timothyandrew.net/blog/2013/04/08/use-lambdas-for-date-based-rails-scopes/">
+  <link rel="canonical" href="http://blog.timothyandrew.net/blog/2013/04/12/changing-the-server-timeout-on-engineyard/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -82,7 +76,7 @@ class Item scope : &hellip;">
   
   <header>
     
-      <h1 class="entry-title">Use Lambdas for Date-based Rails Scopes</h1>
+      <h1 class="entry-title">Changing the Server Timeout on EngineYard</h1>
     
     
       <p class="meta">
@@ -98,14 +92,31 @@ class Item scope : &hellip;">
   
 
 
-<time datetime="2013-04-08T00:26:00+05:30" pubdate data-updated="true">Apr 8<span>th</span>, 2013</time>
+<time datetime="2013-04-12T22:29:00+05:30" pubdate data-updated="true">Apr 12<span>th</span>, 2013</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>A scope allows you to specify an ARel query that can be used as a method call to the model (or association objects).</p>
+<div class="entry-content"><p>While working on <a href="http://github.com/c42/survey-web">survey-web</a> today, we were stuck for a really long time trying to figure out this problem.</p>
+
+<p>Unless otherwise specified, image uploads while adding a response are capped at 5MB per image.
+Adding a larger image (like this 20MB image) should result in a validation error showing up.</p>
+
+<p><img src="/images/2013-04-12-image-too-big.png" alt="Validation Error" /></p>
+
+<p>On production, we&#8217;d see this.</p>
+
+<p><img src="/images/2013-04-12-502.png" alt="Production" /></p>
+
+<p>After a <em>lot</em> of digging, including looking at Carrierwave (and <a href="https://github.com/lardawge/carrierwave_backgrounder">Backgrounder</a>), delayed_job server logs, and our controller logic pretty closely, we noticed in <code>production.log</code> that Rails was sending down a <code>200</code>, but the browser was recieving a <code>502</code>.</p>
+
+<p><code>unicorn.log</code> showed that a worker process was being killed with a <code>SIGIOP</code> whenever the error page showed up.</p>
+
+<p>Only then did we realise that the worker was being killed around 60s every time. It had to be a timeout issue.</p>
+
+<p>On EngineYard, the unicorn config already had:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -113,54 +124,39 @@ class Item scope : &hellip;">
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Item</span>
-</span><span class='line'>  <span class="n">scope</span> <span class="ss">:delivered</span><span class="p">,</span> <span class="n">where</span><span class="p">(</span><span class="ss">delivered</span><span class="p">:</span> <span class="kp">true</span><span class="p">)</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">Item</span><span class="o">.</span><span class="n">delivered</span><span class="o">.</span><span class="n">to_sql</span>                     <span class="c1"># SELECT &quot;items&quot;.* FROM &quot;items&quot;  WHERE &quot;items&quot;.&quot;delivered&quot; = &#39;t&#39;</span>
-</span><span class='line'><span class="no">Item</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">price</span><span class="p">:</span> <span class="mi">2000</span><span class="p">)</span><span class="o">.</span><span class="n">delivered</span><span class="o">.</span><span class="n">to_sql</span>  <span class="c1"># SELECT &quot;items&quot;.* FROM &quot;items&quot;  WHERE &quot;items&quot;.&quot;price&quot; = 2000 AND &quot;items&quot;.&quot;delivered&quot; = &#39;t&#39; </span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># sets the timeout of worker processes to +seconds+.  Workers</span>
+</span><span class='line'><span class="c1"># handling the request/app.call/response cycle taking longer than</span>
+</span><span class='line'><span class="c1"># this time period will be forcibly killed (via SIGKILL).  This</span>
+</span><span class='line'><span class="c1"># timeout is enforced by the master process itself and not subject</span>
+</span><span class='line'><span class="c1"># to the scheduling limitations by the worker process.  Due the</span>
+</span><span class='line'><span class="c1"># low-complexity, low-overhead implementation, timeouts of less</span>
+</span><span class='line'><span class="c1"># than 3.0 seconds can be considered inaccurate and unsafe.</span>
+</span><span class='line'><span class="n">timeout</span> <span class="mi">180</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>There&#8217;s a problem if we try using a scope for a relative date, though.</p>
+<p>The server didn&#8217;t seem to be following this configuration.</p>
+
+<p>After a fair bit of googling and help from the <code>#engineyard</code> IRC channel, this is what we did to fix it.<br/>
+Add the following lines to <code>/data/nginx/nginx.conf</code> inside the <code>http{}</code> block (replacing 300 with the timeout you need).</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Item</span>
-</span><span class='line'>  <span class="n">scope</span> <span class="ss">:expired</span><span class="p">,</span> <span class="n">where</span><span class="p">(</span><span class="s2">&quot;expiry_date &lt; ?&quot;</span><span class="p">,</span> <span class="no">Date</span><span class="o">.</span><span class="n">today</span><span class="p">)</span>
-</span><span class='line'><span class="k">end</span>
+</pre></td><td class='code'><pre><code class='nginx'><span class='line'><span class="k">client_header_timeout</span> <span class="mi">300</span><span class="p">;</span>
+</span><span class='line'><span class="k">client_body_timeout</span> <span class="mi">300</span><span class="p">;</span>
+</span><span class='line'><span class="k">send_timeout</span> <span class="mi">300</span><span class="p">;</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>This code gets evaluated when the server is started, and the <em>output</em> of <code>Date.today</code> is stored in the scope.</p>
-
-<p>That scope is equivalent to the following:</p>
+<p>And restart nginx/unicorn with</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Item</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">expired</span>
-</span><span class='line'>    <span class="n">where</span><span class="p">(</span><span class="s2">&quot;expiry_date &lt; ?&quot;</span><span class="p">,</span> <span class="s2">&quot;2013-04-01&quot;</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The date is hardcoded in there, and will not be changed until the scope is re-evaluated.<br/>
-This typically happens only when the server is restarted.</p>
-
-<p>To get around this problem, use a lambda when defining date (or time) based scopes. This will force the evaluation of the scope each time it is <em>called</em>.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Item</span>
-</span><span class='line'>  <span class="n">scope</span> <span class="ss">:expired</span><span class="p">,</span> <span class="nb">lambda</span> <span class="p">{</span> <span class="n">where</span><span class="p">(</span><span class="s2">&quot;expiry_date &lt; ?&quot;</span><span class="p">,</span> <span class="no">Date</span><span class="o">.</span><span class="n">today</span><span class="p">)</span> <span class="p">}</span>
-</span><span class='line'><span class="k">end</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo /etc/init.d/nginx reload
+</span><span class='line'><span class="nv">$ </span>/engineyard/bin/app_&lt;app_name&gt; reload
 </span></code></pre></td></tr></table></div></figure>
 
 </div>
@@ -185,12 +181,12 @@ This typically happens only when the server is restarted.</p>
   
 
 
-<time datetime="2013-04-08T00:26:00+05:30" pubdate data-updated="true">Apr 8<span>th</span>, 2013</time>
+<time datetime="2013-04-12T22:29:00+05:30" pubdate data-updated="true">Apr 12<span>th</span>, 2013</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/rails/'>rails</a>, <a class='category' href='/blog/categories/scope/'>scope</a>
+    <a class='category' href='/blog/categories/engineyard/'>engineyard</a>, <a class='category' href='/blog/categories/nginx/'>nginx</a>, <a class='category' href='/blog/categories/rails/'>rails</a>, <a class='category' href='/blog/categories/ruby/'>ruby</a>, <a class='category' href='/blog/categories/server/'>server</a>, <a class='category' href='/blog/categories/timeout/'>timeout</a>, <a class='category' href='/blog/categories/unicorn/'>unicorn</a>
   
 </span>
 
@@ -199,7 +195,7 @@ This typically happens only when the server is restarted.</p>
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.timothyandrew.net/blog/2013/04/08/use-lambdas-for-date-based-rails-scopes/" data-via="timothyandrew" data-counturl="http://blog.timothyandrew.net/blog/2013/04/08/use-lambdas-for-date-based-rails-scopes/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.timothyandrew.net/blog/2013/04/12/changing-the-server-timeout-on-engineyard/" data-via="timothyandrew" data-counturl="http://blog.timothyandrew.net/blog/2013/04/12/changing-the-server-timeout-on-engineyard/" >Tweet</a>
   
   
   
@@ -210,10 +206,8 @@ This typically happens only when the server is restarted.</p>
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2013/04/06/using-asana-from-a-cheap-nokia-phone/" title="Previous Post: Using Asana From a Cheap Nokia Phone">&laquo; Using Asana From a Cheap Nokia Phone</a>
+        <a class="basic-alignment left" href="/blog/2013/04/08/use-lambdas-for-date-based-rails-scopes/" title="Previous Post: Use Lambdas for Date-based Rails Scopes">&laquo; Use Lambdas for Date-based Rails Scopes</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2013/04/12/changing-the-server-timeout-on-engineyard/" title="Next Post: Changing the Server Timeout on EngineYard">Changing the Server Timeout on EngineYard &raquo;</a>
       
     </p>
   </footer>
@@ -322,8 +316,8 @@ This typically happens only when the server is restarted.</p>
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://blog.timothyandrew.net/blog/2013/04/08/use-lambdas-for-date-based-rails-scopes/';
-        var disqus_url = 'http://blog.timothyandrew.net/blog/2013/04/08/use-lambdas-for-date-based-rails-scopes/';
+        var disqus_identifier = 'http://blog.timothyandrew.net/blog/2013/04/12/changing-the-server-timeout-on-engineyard/';
+        var disqus_url = 'http://blog.timothyandrew.net/blog/2013/04/12/changing-the-server-timeout-on-engineyard/';
         var disqus_script = 'embed.js';
       
     (function () {
