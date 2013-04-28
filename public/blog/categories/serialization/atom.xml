@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: serialization | Timothy's Blog]]></title>
+  <link href="http://blog.timothyandrew.net/blog/categories/serialization/atom.xml" rel="self"/>
+  <link href="http://blog.timothyandrew.net/"/>
+  <updated>2013-04-28T08:21:51+05:30</updated>
+  <id>http://blog.timothyandrew.net/</id>
+  <author>
+    <name><![CDATA[Timothy Andrew]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[YAML Serialization for Delayed Job]]></title>
+    <link href="http://blog.timothyandrew.net/blog/2013/04/28/yaml-serialization-for-delayed-job/"/>
+    <updated>2013-04-28T08:08:00+05:30</updated>
+    <id>http://blog.timothyandrew.net/blog/2013/04/28/yaml-serialization-for-delayed-job</id>
+    <content type="html"><![CDATA[<p>When we first moved excel generation off to a delayed job on <a href="http://github.com/c42/survey-web">survey-web</a>, we had code that looked like this:</p>
+
+<p><code>ruby
+responses = Response.where(:foo =&gt; bar)
+Delayed::Job.enqueue(MyCustomJob.new(responses))
+</code></p>
+
+<p>And this would bomb with an error like <code>Can't dump anonymous Module</code>.<br/>
+After some time getting nowhere, we solved it like this:</p>
+
+<p><code>ruby
+response_ids = Response.where(:foo =&gt; bar).map(&amp;:id)
+Delayed::Job.enqueue(MyCustomJob.new(response_ids))
+</code></p>
+
+<p>And in the job:</p>
+
+<p><code>ruby
+responses = Response.where('id in (?)', response_ids)
+</code></p>
+
+<p>While refactoring a lot of that code over the last few days, we ran into the same issue. But with one difference. A controller spec was failing, but a test for the job which also passed a bunch of responses into it passed.</p>
+
+<p>We wondered if maybe it was because we were passing a relation into the job instead of an array.</p>
+
+<p>So we tried:</p>
+
+<p><code>ruby
+responses = Response.where(:foo =&gt; bar).all
+Delayed::Job.enqueue(MyCustomJob.new(responses))
+</code></p>
+
+<p>And that worked great.</p>
+
+<p>(The files in question are <a href="https://github.com/c42/survey-web/blob/master/app/controllers/responses_controller.rb#L16">here</a> and <a href="https://github.com/c42/survey-web/blob/master/app/models/reports/excel/job.rb%22">here</a>).</p>
+]]></content>
+  </entry>
+  
+</feed>

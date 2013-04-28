@@ -4,7 +4,7 @@
   <title><![CDATA[Timothy's Blog]]></title>
   <link href="http://blog.timothyandrew.net/atom.xml" rel="self"/>
   <link href="http://blog.timothyandrew.net/"/>
-  <updated>2013-04-28T08:19:45+05:30</updated>
+  <updated>2013-04-28T08:21:51+05:30</updated>
   <id>http://blog.timothyandrew.net/</id>
   <author>
     <name><![CDATA[Timothy Andrew]]></name>
@@ -14,19 +14,11 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Yaml Serialization For Delayed Job]]></title>
+    <title type="html"><![CDATA[YAML Serialization for Delayed Job]]></title>
     <link href="http://blog.timothyandrew.net/blog/2013/04/28/yaml-serialization-for-delayed-job/"/>
-    <updated>2013-04-28T00:00:00+05:30</updated>
+    <updated>2013-04-28T08:08:00+05:30</updated>
     <id>http://blog.timothyandrew.net/blog/2013/04/28/yaml-serialization-for-delayed-job</id>
-    <content type="html"><![CDATA[<p>&#92;&#92;&#8212;
-layout: post
-title: &#8220;YAML Serialization for Delayed Job&#8221;
-date: 2013-04-28 08:08
-comments: true</p>
-
-<h2>categories: [ruby, delayed job, yaml, serialization, rails]</h2>
-
-<p>When we first moved excel generation off to a delayed job on <a href="http://github.com/c42/survey-web">survey-web</a>, we had code that looked like this:</p>
+    <content type="html"><![CDATA[<p>When we first moved excel generation off to a delayed job on <a href="http://github.com/c42/survey-web">survey-web</a>, we had code that looked like this:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -67,7 +59,7 @@ After some time getting nowhere, we solved it like this:</p>
 
 <p>And that worked great.</p>
 
-<p>(The files in question are <a href="https://github.com/c42/survey-web/blob/master/app/controllers/responses_controller.rb#L16">here</a> and <a href="https://github.com/c42/survey-web/blob/master/app/models/reports/excel/job.rb">here</a>).</p>
+<p>(The files in question are <a href="https://github.com/c42/survey-web/blob/master/app/controllers/responses_controller.rb#L16">here</a> and <a href="https://github.com/c42/survey-web/blob/master/app/models/reports/excel/job.rb%22">here</a>).</p>
 ]]></content>
   </entry>
   
