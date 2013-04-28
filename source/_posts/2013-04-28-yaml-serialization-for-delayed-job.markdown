@@ -1,4 +1,4 @@
-\\\\\\\\\---
+---
 layout: post
 title: "YAML Serialization for Delayed Job"
 date: 2013-04-28 08:08
@@ -43,4 +43,4 @@ And that worked great.
 (The files in question are [here][1] and [here][2]).
 
 [1]: https://github.com/c42/survey-web/blob/master/app/controllers/responses_controller.rb#L16
-[2]: https://github.com/c42/survey-web/blob/master/app/models/reports/excel/job.rb
+[2]: https://github.com/c42/survey-web/blob/master/app/models/reports/excel/job.rb"
