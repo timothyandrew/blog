@@ -1,0 +1,397 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Writing Custom RSpec Matchers - Timothy's Blog</title>
+  <meta name="author" content="Timothy Andrew">
+
+  
+  <meta name="description" content="RSpec matchers let you abstract away common assertions in your test code. For example, we recently had a spec file with a bunch of lines that looked &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.timothyandrew.net/blog/2013/05/01/writing-custom-rspec-matchers/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Timothy's Blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-39904863-1', 'timothyandrew.net');
+    ga('send', 'pageview');
+
+  </script>
+
+
+</head>
+
+<body   >
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.timothyandrew.net" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+    <li><a href="/">
+        <span class="blue_light">
+            Timothy's Blog
+        </span>
+       
+    </a></li>
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Writing Custom RSpec Matchers</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-01T11:56:00+05:30" pubdate data-updated="true">May 1<span>st</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>RSpec matchers let you abstract away common assertions in your test code.</p>
+
+<p>For example, we recently had a spec file with a bunch of lines that looked like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">worksheet</span><span class="o">.</span><span class="n">rows</span><span class="o">[</span><span class="mi">0</span><span class="o">].</span><span class="n">cells</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">:value</span><span class="p">)</span><span class="o">.</span><span class="n">should</span> <span class="kp">include</span> <span class="s2">&quot;Foo&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Which tests if the excel file we&#8217;re generating (using <a href="https://github.com/randym/axlsx">axlsx</a>) includes <code>Foo</code> in the header row.</p>
+
+<p>That isn&#8217;t very neat. What if we replace it with this?</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">worksheet</span><span class="o">.</span><span class="n">should</span> <span class="n">have_header_cell</span> <span class="s2">&quot;Foo&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That looks a lot better. We can implement this kind of abstraction using custom RSpec matchers.</p>
+
+<p>The matcher for this is as simple as:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="ss">RSpec</span><span class="p">:</span><span class="ss">:Matchers</span><span class="o">.</span><span class="n">define</span> <span class="ss">:have_header_cell</span> <span class="k">do</span> <span class="o">|</span><span class="n">cell_value</span><span class="o">|</span>
+</span><span class='line'>  <span class="n">match</span> <span class="k">do</span> <span class="o">|</span><span class="n">worksheet</span><span class="o">|</span>
+</span><span class='line'>    <span class="n">worksheet</span><span class="o">.</span><span class="n">rows</span><span class="o">[</span><span class="mi">0</span><span class="o">].</span><span class="n">cells</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">:value</span><span class="p">)</span><span class="o">.</span><span class="n">include?</span> <span class="n">cell_value</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>RSpec passes in the expected and actual values to these blocks, and our code has to return a boolean representing the result of the assertion.</p>
+
+<p>Now what about assertions that look like this?</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">worksheet</span><span class="o">.</span><span class="n">rows</span><span class="o">[</span><span class="mi">1</span><span class="o">].</span><span class="n">cells</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">:value</span><span class="p">)</span><span class="o">.</span><span class="n">should</span> <span class="kp">include</span> <span class="s2">&quot;Foo&quot;</span>
+</span><span class='line'><span class="n">worksheet</span><span class="o">.</span><span class="n">rows</span><span class="o">[</span><span class="mi">2</span><span class="o">].</span><span class="n">cells</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">:value</span><span class="p">)</span><span class="o">.</span><span class="n">should</span> <span class="kp">include</span> <span class="s2">&quot;Bar&quot;</span>
+</span><span class='line'><span class="n">worksheet</span><span class="o">.</span><span class="n">rows</span><span class="o">[</span><span class="mi">3</span><span class="o">].</span><span class="n">cells</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">:value</span><span class="p">)</span><span class="o">.</span><span class="n">should</span> <span class="kp">include</span> <span class="s2">&quot;Baz&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The row that we&#8217;re checking changes for each assertion. Of course, we <em>could</em> create a different matcher for each of these cases, but there&#8217;s a better way.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">worksheet</span><span class="o">.</span><span class="n">should</span> <span class="n">have_cell</span><span class="p">(</span><span class="s2">&quot;Foo&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">in_row</span> <span class="mi">1</span>
+</span><span class='line'><span class="n">worksheet</span><span class="o">.</span><span class="n">should</span> <span class="n">have_cell</span><span class="p">(</span><span class="s2">&quot;Bar&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">in_row</span> <span class="mi">2</span>
+</span><span class='line'><span class="n">worksheet</span><span class="o">.</span><span class="n">should</span> <span class="n">have_cell</span><span class="p">(</span><span class="s2">&quot;Baz&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">in_row</span> <span class="mi">3</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>RSpec lets you <em>chain</em> custom matchers.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="ss">RSpec</span><span class="p">:</span><span class="ss">:Matchers</span><span class="o">.</span><span class="n">define</span> <span class="ss">:have_cell</span> <span class="k">do</span> <span class="o">|</span><span class="n">expected</span><span class="o">|</span>
+</span><span class='line'>  <span class="n">match</span> <span class="k">do</span> <span class="o">|</span><span class="n">worksheet</span><span class="o">|</span>
+</span><span class='line'>    <span class="n">worksheet</span><span class="o">.</span><span class="n">rows</span><span class="o">[</span><span class="vi">@index</span><span class="o">].</span><span class="n">cells</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">:value</span><span class="p">)</span><span class="o">.</span><span class="n">include?</span> <span class="n">expected</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">chain</span> <span class="ss">:in_row</span> <span class="k">do</span> <span class="o">|</span><span class="n">index</span><span class="o">|</span>
+</span><span class='line'>    <span class="vi">@index</span> <span class="o">=</span> <span class="n">index</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">failure_message_for_should</span> <span class="k">do</span> <span class="o">|</span><span class="n">actual</span><span class="o">|</span>
+</span><span class='line'>    <span class="s2">&quot;Expected </span><span class="si">#{</span><span class="n">actual</span><span class="si">}</span><span class="s2"> to include </span><span class="si">#{</span><span class="n">expected</span><span class="si">}</span><span class="s2"> at row </span><span class="si">#{</span><span class="vi">@index</span><span class="si">}</span><span class="s2">.&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We first store the argument passed in to <code>in_row</code> as an instance variable, and then access it in the main <code>have_cell</code> matcher.</p>
+
+<p>The example also includes a custom error message handler, which properly formats an error message if the assertion fails.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Timothy Andrew</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-01T11:56:00+05:30" pubdate data-updated="true">May 1<span>st</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/matcher/'>matcher</a>, <a class='category' href='/blog/categories/rails/'>rails</a>, <a class='category' href='/blog/categories/rspec/'>rspec</a>, <a class='category' href='/blog/categories/ruby/'>ruby</a>, <a class='category' href='/blog/categories/tdd/'>tdd</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.timothyandrew.net/blog/2013/05/01/writing-custom-rspec-matchers/" data-via="timothyandrew" data-counturl="http://blog.timothyandrew.net/blog/2013/05/01/writing-custom-rspec-matchers/" >Tweet</a>
+  
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/04/28/yaml-serialization-for-delayed-job/" title="Previous Post: YAML Serialization for Delayed Job">&laquo; YAML Serialization for Delayed Job</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/05/01/writing-custom-rspec-matchers/">Writing Custom RSpec Matchers</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/04/28/yaml-serialization-for-delayed-job/">YAML Serialization for Delayed Job</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/04/12/changing-the-server-timeout-on-engineyard/">Changing the Server Timeout on EngineYard</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/04/08/use-lambdas-for-date-based-rails-scopes/">Use Lambdas for Date-based Rails Scopes</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/04/06/using-asana-from-a-cheap-nokia-phone/">Using Asana From a Cheap Nokia Phone</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/timothyandrew">@timothyandrew</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'timothyandrew',
+            count: 3,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+<section>
+  <h1>About</h1>
+      <p>
+        Timothy has been vaguely passionate about computers ever since he got all the way through Prince of Persia when
+        he was five. This grew into a legitimate love for the field after he crashed his Windows box in 2007 and managed
+        a fragile triple-boot system that included a
+        <a href="http://en.wikipedia.org/wiki/OSx86">patched version of OS X</a>.
+      </p>
+      <p>
+        While he was slacking off from doing his mostly-meaningless Computer Science degree, he discovered an
+        <a href="http://github.com/timothyandrew">interest for coding</a>, and there was no looking back.
+      </p>
+      <p>
+        Having graduated recently, he's eager to put in his <a href="http://norvig.com/21-days.html">10,000 hours</a>
+        and finally get some real-world experience.
+      </p>
+      <a href="http://c42.in"><img src="http://c42.in/images/logo.png"></a>
+</section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Timothy Andrew -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'timothysblog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.timothyandrew.net/blog/2013/05/01/writing-custom-rspec-matchers/';
+        var disqus_url = 'http://blog.timothyandrew.net/blog/2013/05/01/writing-custom-rspec-matchers/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

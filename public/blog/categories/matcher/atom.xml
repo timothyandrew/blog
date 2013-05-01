@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: matcher | Timothy's Blog]]></title>
+  <link href="http://blog.timothyandrew.net/blog/categories/matcher/atom.xml" rel="self"/>
+  <link href="http://blog.timothyandrew.net/"/>
+  <updated>2013-05-01T12:17:58+05:30</updated>
+  <id>http://blog.timothyandrew.net/</id>
+  <author>
+    <name><![CDATA[Timothy Andrew]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Writing Custom RSpec Matchers]]></title>
+    <link href="http://blog.timothyandrew.net/blog/2013/05/01/writing-custom-rspec-matchers/"/>
+    <updated>2013-05-01T11:56:00+05:30</updated>
+    <id>http://blog.timothyandrew.net/blog/2013/05/01/writing-custom-rspec-matchers</id>
+    <content type="html"><![CDATA[<p>RSpec matchers let you abstract away common assertions in your test code.</p>
+
+<p>For example, we recently had a spec file with a bunch of lines that looked like this:</p>
+
+<p><code>ruby
+worksheet.rows[0].cells.map(&amp;:value).should include "Foo"
+</code></p>
+
+<p>Which tests if the excel file we're generating (using <a href="https://github.com/randym/axlsx">axlsx</a>) includes <code>Foo</code> in the header row.</p>
+
+<p>That isn't very neat. What if we replace it with this?</p>
+
+<p><code>ruby
+worksheet.should have_header_cell "Foo"
+</code></p>
+
+<p>That looks a lot better. We can implement this kind of abstraction using custom RSpec matchers.</p>
+
+<p>The matcher for this is as simple as:</p>
+
+<p>```ruby
+RSpec::Matchers.define :have_header_cell do |cell_value|
+  match do |worksheet|</p>
+
+<pre><code>worksheet.rows[0].cells.map(&amp;:value).include? cell_value
+</code></pre>
+
+<p>  end
+end
+```
+RSpec passes in the expected and actual values to these blocks, and our code has to return a boolean representing the result of the assertion.</p>
+
+<p>Now what about assertions that look like this?</p>
+
+<p><code>ruby
+worksheet.rows[1].cells.map(&amp;:value).should include "Foo"
+worksheet.rows[2].cells.map(&amp;:value).should include "Bar"
+worksheet.rows[3].cells.map(&amp;:value).should include "Baz"
+</code></p>
+
+<p>The row that we're checking changes for each assertion. Of course, we <em>could</em> create a different matcher for each of these cases, but there's a better way.</p>
+
+<p><code>ruby
+worksheet.should have_cell("Foo").in_row 1
+worksheet.should have_cell("Bar").in_row 2
+worksheet.should have_cell("Baz").in_row 3
+</code></p>
+
+<p>RSpec lets you <em>chain</em> custom matchers.</p>
+
+<p>```ruby
+RSpec::Matchers.define :have_cell do |expected|
+  match do |worksheet|</p>
+
+<pre><code>worksheet.rows[@index].cells.map(&amp;:value).include? expected
+</code></pre>
+
+<p>  end</p>
+
+<p>  chain :in_row do |index|</p>
+
+<pre><code>@index = index
+</code></pre>
+
+<p>  end</p>
+
+<p>  failure_message_for_should do |actual|</p>
+
+<pre><code>"Expected #{actual} to include #{expected} at row #{@index}."
+</code></pre>
+
+<p>  end
+end
+```</p>
+
+<p>We first store the argument passed in to <code>in_row</code> as an instance variable, and then access it in the main <code>have_cell</code> matcher.</p>
+
+<p>The example also includes a custom error message handler, which properly formats an error message if the assertion fails.</p>
+]]></content>
+  </entry>
+  
+</feed>
