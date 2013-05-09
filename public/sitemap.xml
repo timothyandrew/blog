@@ -35,12 +35,18 @@
         <lastmod>2013-05-01T12:17:25+05:30</lastmod>
     </url>
     <url>
+        <loc>
+            http://blog.timothyandrew.net/blog/2013/05/09/turning-your-local-git-repo-into-a-remote/
+        </loc>
+        <lastmod>2013-05-09T20:41:05+05:30</lastmod>
+    </url>
+    <url>
         <loc>http://blog.timothyandrew.net/blog/archives/</loc>
-        <lastmod>2013-05-01T12:17:25+05:30</lastmod>
+        <lastmod>2013-05-09T20:41:05+05:30</lastmod>
     </url>
     <url>
         <loc>http://blog.timothyandrew.net/</loc>
-        <lastmod>2013-05-01T12:17:25+05:30</lastmod>
+        <lastmod>2013-05-09T20:41:05+05:30</lastmod>
     </url>
     <url>
         <loc>http://blog.timothyandrew.net/robots.txt</loc>
