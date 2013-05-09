@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: git howto | Timothy's Blog]]></title>
-  <link href="http://blog.timothyandrew.net/blog/categories/git-howto/atom.xml" rel="self"/>
+  <title><![CDATA[Category: git | Timothy's Blog]]></title>
+  <link href="http://blog.timothyandrew.net/blog/categories/git/atom.xml" rel="self"/>
   <link href="http://blog.timothyandrew.net/"/>
-  <updated>2013-05-09T20:53:13+05:30</updated>
+  <updated>2013-05-09T20:55:55+05:30</updated>
   <id>http://blog.timothyandrew.net/</id>
   <author>
     <name><![CDATA[Timothy Andrew]]></name>
