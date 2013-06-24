@@ -4,7 +4,7 @@
   <title><![CDATA[Category: postgres | Timothy's Blog]]></title>
   <link href="http://blog.timothyandrew.net/blog/categories/postgres/atom.xml" rel="self"/>
   <link href="http://blog.timothyandrew.net/"/>
-  <updated>2013-06-24T18:50:42+05:30</updated>
+  <updated>2013-06-24T21:16:31+05:30</updated>
   <id>http://blog.timothyandrew.net/</id>
   <author>
     <name><![CDATA[Timothy Andrew]]></name>
@@ -291,14 +291,14 @@ end
 <p>Let's see if recursive queries are faster.</p>
 
 <p>```ruby
-pry(main)> Benchmark.ms { 5.times { Survey.find(9).sub_questions_in_order } }
-=> 951.604</p>
+pry(main)> Benchmark.ms { 5.times { Survey.find(9).sub_questions_using_recursive_queries }}
+=> 36.839999999999996</p>
 
-<p>pry(main)> Benchmark.ms { 5.times { Survey.find(9).sub_questions_using_recursive_queries }}
-=> 11.591000000000001
+<p>pry(main)> Benchmark.ms { 5.times { Survey.find(9).sub_questions_in_order } }
+=> 1145.1309999999999
 ```</p>
 
-<p>82x faster? Not bad.</p>
+<p>31x faster? Not bad.</p>
 
 <p><a href="/images/recursive-pg/not-bad.jpg"><img src="/images/recursive-pg/not-bad.jpg" alt="Not bad" /></a></p>
 ]]></content>

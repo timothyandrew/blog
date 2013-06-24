@@ -4,7 +4,7 @@
   <title><![CDATA[Timothy's Blog]]></title>
   <link href="http://blog.timothyandrew.net/atom.xml" rel="self"/>
   <link href="http://blog.timothyandrew.net/"/>
-  <updated>2013-06-24T18:50:42+05:30</updated>
+  <updated>2013-06-24T21:16:31+05:30</updated>
   <id>http://blog.timothyandrew.net/</id>
   <author>
     <name><![CDATA[Timothy Andrew]]></name>
@@ -385,15 +385,15 @@ We have to be a little creative here:</p>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">pry</span><span class="p">(</span><span class="n">main</span><span class="p">)</span><span class="o">&gt;</span> <span class="no">Benchmark</span><span class="o">.</span><span class="n">ms</span> <span class="p">{</span> <span class="mi">5</span><span class="o">.</span><span class="n">times</span> <span class="p">{</span> <span class="no">Survey</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="mi">9</span><span class="p">)</span><span class="o">.</span><span class="n">sub_questions_in_order</span> <span class="p">}</span> <span class="p">}</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="mi">951</span><span class="o">.</span><span class="mi">604</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">pry</span><span class="p">(</span><span class="n">main</span><span class="p">)</span><span class="o">&gt;</span> <span class="no">Benchmark</span><span class="o">.</span><span class="n">ms</span> <span class="p">{</span> <span class="mi">5</span><span class="o">.</span><span class="n">times</span> <span class="p">{</span> <span class="no">Survey</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="mi">9</span><span class="p">)</span><span class="o">.</span><span class="n">sub_questions_using_recursive_queries</span> <span class="p">}}</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="mi">36</span><span class="o">.</span><span class="mi">839999999999996</span>
 </span><span class='line'>
-</span><span class='line'><span class="n">pry</span><span class="p">(</span><span class="n">main</span><span class="p">)</span><span class="o">&gt;</span> <span class="no">Benchmark</span><span class="o">.</span><span class="n">ms</span> <span class="p">{</span> <span class="mi">5</span><span class="o">.</span><span class="n">times</span> <span class="p">{</span> <span class="no">Survey</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="mi">9</span><span class="p">)</span><span class="o">.</span><span class="n">sub_questions_using_recursive_queries</span> <span class="p">}}</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="mi">11</span><span class="o">.</span><span class="mi">591000000000001</span>
+</span><span class='line'><span class="n">pry</span><span class="p">(</span><span class="n">main</span><span class="p">)</span><span class="o">&gt;</span> <span class="no">Benchmark</span><span class="o">.</span><span class="n">ms</span> <span class="p">{</span> <span class="mi">5</span><span class="o">.</span><span class="n">times</span> <span class="p">{</span> <span class="no">Survey</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="mi">9</span><span class="p">)</span><span class="o">.</span><span class="n">sub_questions_in_order</span> <span class="p">}</span> <span class="p">}</span>
+</span><span class='line'><span class="o">=&gt;</span> <span class="mi">1145</span><span class="o">.</span><span class="mi">1309999999999</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>82x faster? Not bad.</p>
+<p>31x faster? Not bad.</p>
 
 <p><a href="http://blog.timothyandrew.net/images/recursive-pg/not-bad.jpg"><img src="http://blog.timothyandrew.net/images/recursive-pg/not-bad.jpg" alt="Not bad" /></a></p>
 ]]></content>
