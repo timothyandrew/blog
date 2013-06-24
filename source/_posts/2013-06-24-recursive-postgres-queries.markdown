@@ -256,13 +256,13 @@ Each chain looks like this:
 Let's see if recursive queries are faster.
 
 ```ruby
-pry(main)> Benchmark.ms { 5.times { Survey.find(9).sub_questions_in_order } }
-=> 951.604
-
 pry(main)> Benchmark.ms { 5.times { Survey.find(9).sub_questions_using_recursive_queries }}
-=> 11.591000000000001
+=> 36.839999999999996
+
+pry(main)> Benchmark.ms { 5.times { Survey.find(9).sub_questions_in_order } }
+=> 1145.1309999999999
 ```
 
-82x faster? Not bad.
+31x faster? Not bad.
 
 [![Not bad](/images/recursive-pg/not-bad.jpg)](/images/recursive-pg/not-bad.jpg)
