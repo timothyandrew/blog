@@ -46,9 +46,11 @@ This gives us a depth-first ordering of this tree:
 
 [![Naive Ordering](/images/recursive-pg/naive-order.png)](/images/recursive-pg/naive-order.png)
 
-### Recursive Queries
-
 For large surveys with 5+ levels of nesting, and more than a hundred questions, this is pretty slow.
+
+<!-- more -->
+
+### Recursive Queries
 
 I've used gems like [`awesome_nested_set`](https://github.com/collectiveidea/awesome_nested_set) before, but as far as I could find, none of them supported fetching results across multiple models.
 
