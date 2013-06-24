@@ -8,16 +8,16 @@
   <title>Timothy's Blog</title>
   <meta name="author" content="Timothy Andrew">
 
-
-  <meta name="description" content="Need to pull some changes from a friend&#8217;s local Git repo without having to push to origin? This post will show you how to do that. You can &hellip;">
-
+  
+  <meta name="description" content="Introduction At Nilenso, I&#8217;m working on an (open-source!) app to design and conduct surveys. Here&#8217;s a simple survey being designed: &hellip;">
+  
 
   <!-- http://t.co/dKP3o1e -->
   <meta name="HandheldFriendly" content="True">
   <meta name="MobileOptimized" content="320">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-
+  
   <link rel="canonical" href="http://blog.timothyandrew.net/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
@@ -29,7 +29,7 @@
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 
-
+  
   <script>
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -47,22 +47,22 @@
 <body   >
   <nav role="navigation"><ul class="subscription" data-subscription="rss">
   <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
-
+  
 </ul>
-
+  
 <form action="http://google.com/search" method="get">
   <fieldset role="search">
     <input type="hidden" name="q" value="site:blog.timothyandrew.net" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
-
+  
 <ul class="main-navigation">
     <li><a href="/">
         <span class="blue_light">
             Timothy's Blog
         </span>
-
+       
     </a></li>
   <li><a href="/">Blog</a></li>
   <li><a href="/blog/archives">Archives</a></li>
@@ -72,17 +72,18 @@
   <div id="main">
     <div id="content">
       <div class="blog-index">
-
-
-
+  
+  
+  
     <article>
-
+      
   <header>
-
-      <h1 class="entry-title"><a href="/blog/2013/05/09/turning-your-local-git-repo-into-a-remote/">Turning Your Local Git Repo Into a Remote</a></h1>
-
-
+    
+      <h1 class="entry-title"><a href="/blog/2013/06/24/recursive-postgres-queries/">Recursive Postgres Queries</a></h1>
+    
+    
       <p class="meta">
+        
 
 
 
@@ -91,14 +92,99 @@
 
 
 
+  
 
 
+<time datetime="2013-06-24T08:30:00+05:30" pubdate data-updated="true">Jun 24<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>Introduction</h3>
+
+<p>At <a href="http://nilenso.com/">Nilenso</a>, I&#8217;m working on an (<a href="http://github.com/nilenso/ashoka-survey-web">open-source!</a>) app to design and conduct surveys.</p>
+
+<p>Here&#8217;s a simple survey being designed:</p>
+
+<p><a href="/images/recursive-pg/survey-overview.png"><img src="/images/recursive-pg/survey-overview.png" alt="Survey Builder Overview" /></a></p>
+
+<p>Internally, this is represented as:</p>
+
+<p><a href="/images/recursive-pg/internal-survey-overview.png"><img src="/images/recursive-pg/internal-survey-overview.png" alt="Survey Model Overview" /></a></p>
+
+<p>A survey is made up of many <em>questions</em>. A number of questions can (optionally) be grouped together in a <em>category</em>. Our actual data model is a bit more complicated than this (sub-questions, especially), but let&#8217;s assume that we&#8217;re just working with questions and categories.</p>
+
+<p>Here&#8217;s how we preserve the ordering of questions and categories in this survey.</p>
+
+<p>Each question and category has an <code>order_number</code> field. It&#8217;s an integer that specifies the relative ordering of itself and its siblings.</p>
+
+<p>For example, in this case,</p>
+
+<p><a href="/images/recursive-pg/order-number-overview.png"><img src="/images/recursive-pg/order-number-overview.png" alt="Order Number Overview" /></a></p>
+
+<p>the question <code>Bar</code> will have an <code>order_number</code> that is <em>less than</em> the order number of <code>Baz</code>.</p>
+
+<p>This guarantees that the a category can fetch its sub-questions in the right order:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># In category.rb</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">sub_questions_in_order</span>
+</span><span class='line'>  <span class="n">questions</span><span class="o">.</span><span class="n">order</span><span class="p">(</span><span class="s1">&#39;order_number&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In fact, this is how we fetch the entire survey at this point. Each category calls <code>sub_questions_in_order</code> on each of its children, and so on down the entire tree.</p>
+
+<p>This gives us a depth-first ordering of this tree:</p>
+
+<p><a href="/images/recursive-pg/naive-order.png"><img src="/images/recursive-pg/naive-order.png" alt="Naive Ordering" /></a></p>
+
+<p>For large surveys with 5+ levels of nesting, and more than a hundred questions, this is pretty slow.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/06/24/recursive-postgres-queries/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/05/09/turning-your-local-git-repo-into-a-remote/">Turning Your Local Git Repo Into a Remote</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
 
 
 <time datetime="2013-05-09T20:18:00+05:30" pubdate data-updated="true">May 9<span>th</span>, 2013</time>
-
+        
       </p>
-
+    
   </header>
 
 
@@ -148,21 +234,22 @@
 
 
 </div>
-
-
+  
+  
 
 
     </article>
-
-
+  
+  
     <article>
-
+      
   <header>
-
+    
       <h1 class="entry-title"><a href="/blog/2013/05/01/writing-custom-rspec-matchers/">Writing Custom RSpec Matchers</a></h1>
-
-
+    
+    
       <p class="meta">
+        
 
 
 
@@ -171,14 +258,13 @@
 
 
 
-
-
+  
 
 
 <time datetime="2013-05-01T11:56:00+05:30" pubdate data-updated="true">May 1<span>st</span>, 2013</time>
-
+        
       </p>
-
+    
   </header>
 
 
@@ -276,21 +362,22 @@
 
 <p>The example also includes a custom error message handler, which properly formats an error message if the assertion fails.</p>
 </div>
-
-
+  
+  
 
 
     </article>
-
-
+  
+  
     <article>
-
+      
   <header>
-
+    
       <h1 class="entry-title"><a href="/blog/2013/04/28/yaml-serialization-for-delayed-job/">YAML Serialization for Delayed Job</a></h1>
-
-
+    
+    
       <p class="meta">
+        
 
 
 
@@ -299,14 +386,13 @@
 
 
 
-
-
+  
 
 
 <time datetime="2013-04-28T08:08:00+05:30" pubdate data-updated="true">Apr 28<span>th</span>, 2013</time>
-
+        
       </p>
-
+    
   </header>
 
 
@@ -353,21 +439,22 @@ After some time getting nowhere, we solved it like this:</p>
 
 <p>(The files in question are <a href="https://github.com/c42/survey-web/blob/master/app/controllers/responses_controller.rb#L16">here</a> and <a href="https://github.com/c42/survey-web/blob/master/app/models/reports/excel/job.rb%22">here</a>).</p>
 </div>
-
-
+  
+  
 
 
     </article>
-
-
+  
+  
     <article>
-
+      
   <header>
-
+    
       <h1 class="entry-title"><a href="/blog/2013/04/12/changing-the-server-timeout-on-engineyard/">Changing the Server Timeout on EngineYard</a></h1>
-
-
+    
+    
       <p class="meta">
+        
 
 
 
@@ -376,14 +463,13 @@ After some time getting nowhere, we solved it like this:</p>
 
 
 
-
-
+  
 
 
 <time datetime="2013-04-12T22:29:00+05:30" pubdate data-updated="true">Apr 12<span>th</span>, 2013</time>
-
+        
       </p>
-
+    
   </header>
 
 
@@ -448,21 +534,22 @@ Add the following lines to <code>/data/nginx/nginx.conf</code> inside the <code>
 </span></code></pre></td></tr></table></div></figure>
 
 </div>
-
-
+  
+  
 
 
     </article>
-
-
+  
+  
     <article>
-
+      
   <header>
-
+    
       <h1 class="entry-title"><a href="/blog/2013/04/08/use-lambdas-for-date-based-rails-scopes/">Use Lambdas for Date-based Rails Scopes</a></h1>
-
-
+    
+    
       <p class="meta">
+        
 
 
 
@@ -471,14 +558,13 @@ Add the following lines to <code>/data/nginx/nginx.conf</code> inside the <code>
 
 
 
-
-
+  
 
 
 <time datetime="2013-04-08T00:26:00+05:30" pubdate data-updated="true">Apr 8<span>th</span>, 2013</time>
-
+        
       </p>
-
+    
   </header>
 
 
@@ -541,21 +627,22 @@ This typically happens only when the server is restarted.</p>
 </span></code></pre></td></tr></table></div></figure>
 
 </div>
-
-
+  
+  
 
 
     </article>
-
-
+  
+  
     <article>
-
+      
   <header>
-
+    
       <h1 class="entry-title"><a href="/blog/2013/04/06/using-asana-from-a-cheap-nokia-phone/">Using Asana From a Cheap Nokia Phone</a></h1>
-
-
+    
+    
       <p class="meta">
+        
 
 
 
@@ -564,14 +651,13 @@ This typically happens only when the server is restarted.</p>
 
 
 
-
-
+  
 
 
 <time datetime="2013-04-06T23:29:00+05:30" pubdate data-updated="true">Apr 6<span>th</span>, 2013</time>
-
+        
       </p>
-
+    
   </header>
 
 
@@ -596,25 +682,26 @@ This typically happens only when the server is restarted.</p>
 <p>Read on for an explanation of how it works.</p>
 
 </div>
-
-
+  
+  
     <footer>
       <a rel="full-article" href="/blog/2013/04/06/using-asana-from-a-cheap-nokia-phone/">Read on &rarr;</a>
     </footer>
-
+  
 
 
     </article>
-
-
+  
+  
     <article>
-
+      
   <header>
-
+    
       <h1 class="entry-title"><a href="/blog/2013/04/05/using-swipe-dot-js-to-swipe-between-pages-of-a-web-app/">Using Swipe.js to Swipe Between Pages of a Web App</a></h1>
-
-
+    
+    
       <p class="meta">
+        
 
 
 
@@ -623,14 +710,13 @@ This typically happens only when the server is restarted.</p>
 
 
 
-
-
+  
 
 
 <time datetime="2013-04-05T21:45:00+05:30" pubdate data-updated="true">Apr 5<span>th</span>, 2013</time>
-
+        
       </p>
-
+    
   </header>
 
 
@@ -824,44 +910,44 @@ On a desktop, though, there&#8217;s no way to switch between pages.</p>
 </span></code></pre></td></tr></table></div></figure>
 
 </div>
-
-
+  
+  
 
 
     </article>
-
+  
   <div class="pagination">
-
+    
     <a href="/blog/archives">Blog Archives</a>
-
+    
   </div>
 </div>
 <aside class="sidebar">
-
+  
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
-
+    
+      <li class="post">
+        <a href="/blog/2013/06/24/recursive-postgres-queries/">Recursive Postgres Queries</a>
+      </li>
+    
       <li class="post">
         <a href="/blog/2013/05/09/turning-your-local-git-repo-into-a-remote/">Turning Your Local Git Repo Into a Remote</a>
       </li>
-
+    
       <li class="post">
         <a href="/blog/2013/05/01/writing-custom-rspec-matchers/">Writing Custom RSpec Matchers</a>
       </li>
-
+    
       <li class="post">
         <a href="/blog/2013/04/28/yaml-serialization-for-delayed-job/">YAML Serialization for Delayed Job</a>
       </li>
-
+    
       <li class="post">
         <a href="/blog/2013/04/12/changing-the-server-timeout-on-engineyard/">Changing the Server Timeout on EngineYard</a>
       </li>
-
-      <li class="post">
-        <a href="/blog/2013/04/08/use-lambdas-for-date-based-rails-scopes/">Use Lambdas for Date-based Rails Scopes</a>
-      </li>
-
+    
   </ul>
 </section>
 
@@ -870,9 +956,9 @@ On a desktop, though, there&#8217;s no way to switch between pages.</p>
   <ul id="gh_repos">
     <li class="loading">Status updating&#8230;</li>
   </ul>
-
+  
   <a href="https://github.com/timothyandrew">@timothyandrew</a> on GitHub
-
+  
   <script type="text/javascript">
     $.domReady(function(){
         if (!window.jXHR){
@@ -916,7 +1002,7 @@ On a desktop, though, there&#8217;s no way to switch between pages.</p>
       <a href="http://nilenso.com"><img src="http://nilenso.com/nilenso-200.png"></a>
 </section>
 
-
+  
 </aside>
 
     </div>
@@ -927,14 +1013,14 @@ On a desktop, though, there&#8217;s no way to switch between pages.</p>
 </p>
 
 </footer>
-
+  
 
 <script type="text/javascript">
       var disqus_shortname = 'timothysblog';
-
-
+      
+        
         var disqus_script = 'count.js';
-
+      
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
       dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;

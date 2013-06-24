@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: recursion | Timothy's Blog]]></title>
+  <link href="http://blog.timothyandrew.net/blog/categories/recursion/atom.xml" rel="self"/>
+  <link href="http://blog.timothyandrew.net/"/>
+  <updated>2013-06-24T18:50:42+05:30</updated>
+  <id>http://blog.timothyandrew.net/</id>
+  <author>
+    <name><![CDATA[Timothy Andrew]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Recursive Postgres Queries]]></title>
+    <link href="http://blog.timothyandrew.net/blog/2013/06/24/recursive-postgres-queries/"/>
+    <updated>2013-06-24T08:30:00+05:30</updated>
+    <id>http://blog.timothyandrew.net/blog/2013/06/24/recursive-postgres-queries</id>
+    <content type="html"><![CDATA[<h3>Introduction</h3>
+
+<p>At <a href="http://nilenso.com/">Nilenso</a>, I'm working on an (<a href="http://github.com/nilenso/ashoka-survey-web">open-source!</a>) app to design and conduct surveys.</p>
+
+<p>Here's a simple survey being designed:</p>
+
+<p><a href="/images/recursive-pg/survey-overview.png"><img src="/images/recursive-pg/survey-overview.png" alt="Survey Builder Overview" /></a></p>
+
+<p>Internally, this is represented as:</p>
+
+<p><a href="/images/recursive-pg/internal-survey-overview.png"><img src="/images/recursive-pg/internal-survey-overview.png" alt="Survey Model Overview" /></a></p>
+
+<p>A survey is made up of many <em>questions</em>. A number of questions can (optionally) be grouped together in a <em>category</em>. Our actual data model is a bit more complicated than this (sub-questions, especially), but let's assume that we're just working with questions and categories.</p>
+
+<p>Here's how we preserve the ordering of questions and categories in this survey.</p>
+
+<p>Each question and category has an <code>order_number</code> field. It's an integer that specifies the relative ordering of itself and its siblings.</p>
+
+<p>For example, in this case,</p>
+
+<p><a href="/images/recursive-pg/order-number-overview.png"><img src="/images/recursive-pg/order-number-overview.png" alt="Order Number Overview" /></a></p>
+
+<p>the question <code>Bar</code> will have an <code>order_number</code> that is <em>less than</em> the order number of <code>Baz</code>.</p>
+
+<p>This guarantees that the a category can fetch its sub-questions in the right order:</p>
+
+<p>```ruby</p>
+
+<h1>In category.rb</h1>
+
+<p>def sub_questions_in_order
+  questions.order('order_number')
+end
+<code>``
+In fact, this is how we fetch the entire survey at this point. Each category calls</code>sub_questions_in_order` on each of its children, and so on down the entire tree.</p>
+
+<p>This gives us a depth-first ordering of this tree:</p>
+
+<p><a href="/images/recursive-pg/naive-order.png"><img src="/images/recursive-pg/naive-order.png" alt="Naive Ordering" /></a></p>
+
+<p>For large surveys with 5+ levels of nesting, and more than a hundred questions, this is pretty slow.</p>
+
+<!-- more -->
+
+
+<h3>Recursive Queries</h3>
+
+<p>I've used gems like <a href="https://github.com/collectiveidea/awesome_nested_set"><code>awesome_nested_set</code></a> before, but as far as I could find, none of them supported fetching results across multiple models.</p>
+
+<p>Then I stumbled on <a href="http://www.postgresql.org/docs/9.1/static/queries-with.html">a page</a> describing PostgreSQL's support for recursive queries! That seemed perfect.</p>
+
+<p>Let's solve this particular problem using recursive queries. (My understanding of this is still very basic, so please don't take my word for any of this)</p>
+
+<p>To define a recursive Postgres query, we need to define an initial query, which is called the non-recursive term.</p>
+
+<p>In our case, that would be the top level questions and categories.
+Top level elements don't have a parent category, so their <code>category_id</code> is <code>NULL</code>.</p>
+
+<p><code>sql
+(
+  SELECT id, content, order_number, type, category_id FROM questions
+  WHERE questions.survey_id = 2 AND questions.category_id IS NULL
+)
+UNION
+(
+  SELECT id, content, order_number, type, category_id FROM categories
+  WHERE categories.survey_id = 2 AND categories.category_id IS NULL
+)
+</code></p>
+
+<p>(That query, and all subsequent ones, assume that the survey we're querying has id = 2)</p>
+
+<p>This gives us the top-level elements.</p>
+
+<p><a href="/images/recursive-pg/top-level-elements-query.png"><img src="/images/recursive-pg/top-level-elements-query.png" alt="Top-Level Queries" /></a></p>
+
+<p>Now on to the recursive term. According to the Postgres docs:</p>
+
+<p><a href="/images/recursive-pg/steps.png"><img src="/images/recursive-pg/steps.png" alt="Postgres Steps" /></a></p>
+
+<p>Our recursive term simply has to find all the direct children of the elements fetched by the non-recursive term.</p>
+
+<p>```sql
+WITH RECURSIVE first_level_elements AS (
+  -- Non-recursive term
+  (</p>
+
+<pre><code>(
+  SELECT id, content, order_number, category_id FROM questions
+  WHERE questions.survey_id = 2 AND questions.category_id IS NULL
+UNION
+  SELECT id, content, order_number, category_id FROM categories
+  WHERE categories.survey_id = 2 AND categories.category_id IS NULL
+)
+</code></pre>
+
+<p>  )
+  UNION
+  -- Recursive Term
+  SELECT q.id, q.content, q.order_number, q.category_id
+  FROM first_level_elements fle, questions q
+  WHERE q.survey_id = 2 AND q.category_id = fle.id
+)
+SELECT * from first_level_elements;
+```</p>
+
+<p>But wait. The recursive term is only fetching questions. What if the child of a first-level category is a category?
+Postgres doesn't let us reference the non-recursive term more than once. So doing a <code>UNION</code> of categories and questions is out.
+We have to be a little creative here:</p>
+
+<p>```sql
+WITH RECURSIVE first_level_elements AS (
+  (</p>
+
+<pre><code>(
+  SELECT id, content, order_number, category_id FROM questions
+  WHERE questions.survey_id = 2 AND questions.category_id IS NULL
+UNION
+  SELECT id, content, order_number, category_id FROM categories
+  WHERE categories.survey_id = 2 AND categories.category_id IS NULL
+)
+</code></pre>
+
+<p>  )
+  UNION
+  (</p>
+
+<pre><code>  SELECT e.id, e.content, e.order_number, e.category_id
+  FROM
+  (
+    -- Fetch questions AND categories
+    SELECT id, content, order_number, category_id FROM questions WHERE survey_id = 2
+    UNION
+    SELECT id, content, order_number, category_id FROM categories WHERE survey_id = 2
+  ) e, first_level_elements fle
+  WHERE e.category_id = fle.id
+</code></pre>
+
+<p>  )
+)
+SELECT * from first_level_elements;
+<code>``
+We perform a</code>UNION` of categories and questions <em>before</em> joining it with the non-recursive term.</p>
+
+<p>This yields all the survey elements:</p>
+
+<p><a href="/images/recursive-pg/all-elements-without-order-query.png"><img src="/images/recursive-pg/all-elements-without-order-query.png" alt="Query without ordering" /></a></p>
+
+<p>Unfortunately, it looks like the ordering is way off.</p>
+
+<h3>Ordering a Recursive Query</h3>
+
+<p>The problem is that since we're effectively <em>appending</em> second-level elements to first-level elements, we're effectively performing a <a href="https://en.wikipedia.org/wiki/Breadth-first_search"><em>breadth-first search</em></a> instead of a <a href="http://en.wikipedia.org/wiki/Depth-first_search"><em>depth-first search</em></a>.</p>
+
+<p>How can we correct that?</p>
+
+<p>Postgres has <a href="http://www.postgresql.org/docs/9.1/static/arrays.html">arrays</a> that can be built during a query.</p>
+
+<p>Let's build an array of order numbers for each element that we fetch. Let's call this the <code>path</code>. The <code>path</code> for an element is:</p>
+
+<blockquote><p>the path of it's parent category (if one exists) + its own order_number</p></blockquote>
+
+<p>If we sort the final result by <code>path</code>, we've converted it into a depth-first search!</p>
+
+<p>```sql
+WITH RECURSIVE first_level_elements AS (
+  (</p>
+
+<pre><code>(
+  SELECT id, content, category_id, array[id] AS path FROM questions
+  WHERE questions.survey_id = 2 AND questions.category_id IS NULL
+UNION
+  SELECT id, content, category_id, array[id] AS path FROM categories
+  WHERE categories.survey_id = 2 AND categories.category_id IS NULL
+)
+</code></pre>
+
+<p>  )
+  UNION
+  (</p>
+
+<pre><code>  SELECT e.id, e.content, e.category_id, (fle.path || e.id)
+  FROM
+  (
+    SELECT id, content, category_id, order_number FROM questions WHERE survey_id = 2
+    UNION
+    SELECT id, content, category_id, order_number FROM categories WHERE survey_id = 2
+  ) e, first_level_elements fle
+  WHERE e.category_id = fle.id
+</code></pre>
+
+<p>  )
+)
+SELECT * from first_level_elements ORDER BY path;
+```</p>
+
+<p><a href="/images/recursive-pg/almost.png"><img src="/images/recursive-pg/almost.png" alt="Query with duplicate" /></a></p>
+
+<p>That's <em>almost</em> right. There are two entries for <em>What's your favourite song?</em></p>
+
+<p>This is happening because when we do an ID comparison to look for children:</p>
+
+<p><code>sql
+WHERE e.category_id = fle.id
+</code></p>
+
+<p><code>fle</code> contains both questions and categories. But we want this to match only categories (because questions can't have children).</p>
+
+<p>Let's hard-code a type into each of these queries, so that we don't try and check for children of a question:</p>
+
+<p>```sql
+WITH RECURSIVE first_level_elements AS (
+  (</p>
+
+<pre><code>(
+  SELECT id, content, category_id, 'questions' as type, array[id] AS path FROM questions
+  WHERE questions.survey_id = 2 AND questions.category_id IS NULL
+UNION
+  SELECT id, content, category_id, 'categories' as type, array[id] AS path FROM categories
+  WHERE categories.survey_id = 2 AND categories.category_id IS NULL
+)
+</code></pre>
+
+<p>  )
+  UNION
+  (</p>
+
+<pre><code>  SELECT e.id, e.content, e.category_id, e.type, (fle.path || e.id)
+  FROM
+  (
+    SELECT id, content, category_id, 'questions' as type, order_number FROM questions WHERE survey_id = 2
+    UNION
+    SELECT id, content, category_id, 'categories' as type, order_number FROM categories WHERE survey_id = 2
+  ) e, first_level_elements fle
+  -- Look for children only if the type is 'categories'
+  WHERE e.category_id = fle.id AND fle.type = 'categories'
+</code></pre>
+
+<p>  )
+)
+SELECT * from first_level_elements ORDER BY path;
+```
+<a href="/images/recursive-pg/final.png"><img src="/images/recursive-pg/final.png" alt="Final Query" /></a></p>
+
+<p>That seems about right. We're done here.</p>
+
+<p>Let's see how much of a performance boost this gives us.</p>
+
+<h3>Performance</h3>
+
+<p>Using this script (after creating a survey from the UI), I generated 10 sub-question chains; each 6 levels deep.</p>
+
+<p>```ruby
+survey = Survey.find(9)
+10.times do
+  category = FactoryGirl.create(:category, :survey => survey)
+  6.times do</p>
+
+<pre><code>category = FactoryGirl.create(:category, :category =&gt; category, :survey =&gt; survey)
+</code></pre>
+
+<p>  end
+  FactoryGirl.create(:single_line_question, :category_id => category.id, :survey_id => survey.id)
+end
+```</p>
+
+<p>Each chain looks like this:</p>
+
+<p><a href="/images/recursive-pg/chain.png"><img src="/images/recursive-pg/chain.png" alt="Sub-question Chain" /></a></p>
+
+<p>Let's see if recursive queries are faster.</p>
+
+<p>```ruby
+pry(main)> Benchmark.ms { 5.times { Survey.find(9).sub_questions_in_order } }
+=> 951.604</p>
+
+<p>pry(main)> Benchmark.ms { 5.times { Survey.find(9).sub_questions_using_recursive_queries }}
+=> 11.591000000000001
+```</p>
+
+<p>82x faster? Not bad.</p>
+
+<p><a href="/images/recursive-pg/not-bad.jpg"><img src="/images/recursive-pg/not-bad.jpg" alt="Not bad" /></a></p>
+]]></content>
+  </entry>
+  
+</feed>
