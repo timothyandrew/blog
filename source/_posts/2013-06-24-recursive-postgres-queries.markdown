@@ -8,7 +8,7 @@ categories: [database, postgres, recursion]
 
 ### Introduction
 
-I'm working on an ([open-source!](http://github.com/nilenso/ashoka-survey-web)) app to design and conduct surveys.
+At [Nilenso](http://nilenso.com/), I'm working on an ([open-source!](http://github.com/nilenso/ashoka-survey-web)) app to design and conduct surveys.
 
 Here's a simple survey being designed:
 
