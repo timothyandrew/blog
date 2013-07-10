@@ -5,17 +5,19 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Use Lambdas for Date-based Rails Scopes - Timothy's Blog</title>
+  <title>Using RoboGuice to Inject Views Into a POJO - Timothy's Blog</title>
   <meta name="author" content="Timothy Andrew">
 
   
-  <meta name="description" content="A scope allows you to specify an ARel query that can be used as a method call to the model (or association objects). 1
+  <meta name="description" content="RoboGuice is great. It lets you get rid of code like: 1
 2
 3
 4
 5
 6
-class Item scope : &hellip;">
+7
+8
+public class LoginActivity extends Activity { private Button mSignInButtonView &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -24,7 +26,7 @@ class Item scope : &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.timothyandrew.net/blog/2013/04/08/use-lambdas-for-date-based-rails-scopes/">
+  <link rel="canonical" href="http://blog.timothyandrew.net/blog/2013/07/10/using-roboguice-to-inject-views-into-a-pojo/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -82,7 +84,7 @@ class Item scope : &hellip;">
   
   <header>
     
-      <h1 class="entry-title">Use Lambdas for Date-based Rails Scopes</h1>
+      <h1 class="entry-title">Using RoboGuice to Inject Views Into a POJO</h1>
     
     
       <p class="meta">
@@ -98,14 +100,14 @@ class Item scope : &hellip;">
   
 
 
-<time datetime="2013-04-08T00:26:00+05:30" pubdate data-updated="true">Apr 8<span>th</span>, 2013</time>
+<time datetime="2013-07-10T10:50:00+05:30" pubdate data-updated="true">Jul 10<span>th</span>, 2013</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>A scope allows you to specify an ARel query that can be used as a method call to the model (or association objects).</p>
+<div class="entry-content"><p><a href="https://github.com/roboguice/roboguice">RoboGuice</a> is great. It lets you get rid of code like:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -113,56 +115,93 @@ class Item scope : &hellip;">
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Item</span>
-</span><span class='line'>  <span class="n">scope</span> <span class="ss">:delivered</span><span class="p">,</span> <span class="n">where</span><span class="p">(</span><span class="ss">delivered</span><span class="p">:</span> <span class="kp">true</span><span class="p">)</span>
-</span><span class='line'><span class="k">end</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">LoginActivity</span> <span class="kd">extends</span> <span class="n">Activity</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">Button</span> <span class="n">mSignInButtonView</span><span class="o">;</span>
 </span><span class='line'>
-</span><span class='line'><span class="no">Item</span><span class="o">.</span><span class="n">delivered</span><span class="o">.</span><span class="n">to_sql</span>                     <span class="c1"># SELECT &quot;items&quot;.* FROM &quot;items&quot;  WHERE &quot;items&quot;.&quot;delivered&quot; = &#39;t&#39;</span>
-</span><span class='line'><span class="no">Item</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">price</span><span class="p">:</span> <span class="mi">2000</span><span class="p">)</span><span class="o">.</span><span class="n">delivered</span><span class="o">.</span><span class="n">to_sql</span>  <span class="c1"># SELECT &quot;items&quot;.* FROM &quot;items&quot;  WHERE &quot;items&quot;.&quot;price&quot; = 2000 AND &quot;items&quot;.&quot;delivered&quot; = &#39;t&#39; </span>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="n">Bundle</span> <span class="n">savedInstanceState</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">mSignInButtonView</span> <span class="o">=</span> <span class="o">(</span><span class="n">Button</span><span class="o">)</span> <span class="n">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">sign_in_button</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>There&#8217;s a problem if we try using a scope for a relative date, though.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Item</span>
-</span><span class='line'>  <span class="n">scope</span> <span class="ss">:expired</span><span class="p">,</span> <span class="n">where</span><span class="p">(</span><span class="s2">&quot;expiry_date &lt; ?&quot;</span><span class="p">,</span> <span class="no">Date</span><span class="o">.</span><span class="n">today</span><span class="p">)</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This code gets evaluated when the server is started, and the <em>output</em> of <code>Date.today</code> is stored in the scope.</p>
-
-<p>That scope is equivalent to the following:</p>
+<p>Instead, with a single line, RoboGuice will take care of injecting that view into your activity:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Item</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">expired</span>
-</span><span class='line'>    <span class="n">where</span><span class="p">(</span><span class="s2">&quot;expiry_date &lt; ?&quot;</span><span class="p">,</span> <span class="s2">&quot;2013-04-01&quot;</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">LoginActivity</span> <span class="kd">extends</span> <span class="n">RoboActivity</span> <span class="o">{</span>
+</span><span class='line'>    <span class="nd">@InjectView</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">sign_in_button</span><span class="o">)</span> <span class="n">Button</span> <span class="n">mSignInButtonView</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="n">Bundle</span> <span class="n">savedInstanceState</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="c1">// I have a reference to mSignInButtonView here.</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>The date is hardcoded in there, and will not be changed until the scope is re-evaluated.<br/>
-This typically happens only when the server is restarted.</p>
+<p>Now we&#8217;re rewriting <a href="http://github.com/nilenso/ashoka-survey-mobile">ashoka-survey-mobile</a> as a layered <a href="(http://github.com/nilenso/ashoka-survey-mobile-native">native app</a>).
+We have a LoginView (POJO) which needs references to views present on-screen. Normally, we would instantiate the POJO in the activity, and pass it all the views it needs.</p>
 
-<p>To get around this problem, use a lambda when defining date (or time) based scopes. This will force the evaluation of the scope each time it is <em>called</em>.</p>
+<p>But can we do this with RoboGuice? We can&#8217;t really use <code>@InjectView</code> in a POJO. It needs an Activity context.
+The next best thing is to inject the activity into the POJO (RoboGuice is smart enough to inject the correct activity), and pick the views manually using <code>findViewById</code>.</p>
+
+<p>So in the activity:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Item</span>
-</span><span class='line'>  <span class="n">scope</span> <span class="ss">:expired</span><span class="p">,</span> <span class="nb">lambda</span> <span class="p">{</span> <span class="n">where</span><span class="p">(</span><span class="s2">&quot;expiry_date &lt; ?&quot;</span><span class="p">,</span> <span class="no">Date</span><span class="o">.</span><span class="n">today</span><span class="p">)</span> <span class="p">}</span>
-</span><span class='line'><span class="k">end</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">LoginActivity</span> <span class="kd">extends</span> <span class="n">RoboActivity</span> <span class="o">{</span>
+</span><span class='line'>    <span class="nd">@Inject</span> <span class="n">LoginView</span> <span class="n">loginView</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="n">Bundle</span> <span class="n">savedInstanceState</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">loginView</span><span class="o">.</span><span class="na">onCreate</span><span class="o">();</span> <span class="c1">// Need to manually build up the view references inside LoginView</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
+
+<p>and in <code>LoginView</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">LoginView</span> <span class="o">{</span>
+</span><span class='line'>    <span class="nd">@Inject</span> <span class="n">Activity</span> <span class="n">activity</span><span class="o">;</span> <span class="c1">// This gets injected with the correct instance of LoginActivity</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">Button</span> <span class="n">buttonView</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">EditText</span> <span class="n">editText</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">buttonView</span> <span class="o">=</span> <span class="n">activity</span><span class="o">.</span><span class="na">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">my_button</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">editText</span> <span class="o">=</span> <span class="n">activity</span><span class="o">.</span><span class="na">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">my_edit_text</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And then your POJO can manipulate the views that are on-screen as required.</p>
 </div>
 
 
@@ -185,12 +224,12 @@ This typically happens only when the server is restarted.</p>
   
 
 
-<time datetime="2013-04-08T00:26:00+05:30" pubdate data-updated="true">Apr 8<span>th</span>, 2013</time>
+<time datetime="2013-07-10T10:50:00+05:30" pubdate data-updated="true">Jul 10<span>th</span>, 2013</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/rails/'>rails</a>, <a class='category' href='/blog/categories/scope/'>scope</a>
+    <a class='category' href='/blog/categories/di/'>DI</a>, <a class='category' href='/blog/categories/android/'>android</a>, <a class='category' href='/blog/categories/java/'>java</a>, <a class='category' href='/blog/categories/roboguice/'>roboguice</a>
   
 </span>
 
@@ -199,7 +238,7 @@ This typically happens only when the server is restarted.</p>
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.timothyandrew.net/blog/2013/04/08/use-lambdas-for-date-based-rails-scopes/" data-via="timothyandrew" data-counturl="http://blog.timothyandrew.net/blog/2013/04/08/use-lambdas-for-date-based-rails-scopes/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.timothyandrew.net/blog/2013/07/10/using-roboguice-to-inject-views-into-a-pojo/" data-via="timothyandrew" data-counturl="http://blog.timothyandrew.net/blog/2013/07/10/using-roboguice-to-inject-views-into-a-pojo/" >Tweet</a>
   
   
   
@@ -210,10 +249,8 @@ This typically happens only when the server is restarted.</p>
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2013/04/06/using-asana-from-a-cheap-nokia-phone/" title="Previous Post: Using Asana From a Cheap Nokia Phone">&laquo; Using Asana From a Cheap Nokia Phone</a>
+        <a class="basic-alignment left" href="/blog/2013/06/24/recursive-postgres-queries/" title="Previous Post: Recursive Postgres Queries">&laquo; Recursive Postgres Queries</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2013/04/12/changing-the-server-timeout-on-engineyard/" title="Next Post: Changing the Server Timeout on EngineYard">Changing the Server Timeout on EngineYard &raquo;</a>
       
     </p>
   </footer>
@@ -326,8 +363,8 @@ This typically happens only when the server is restarted.</p>
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://blog.timothyandrew.net/blog/2013/04/08/use-lambdas-for-date-based-rails-scopes/';
-        var disqus_url = 'http://blog.timothyandrew.net/blog/2013/04/08/use-lambdas-for-date-based-rails-scopes/';
+        var disqus_identifier = 'http://blog.timothyandrew.net/blog/2013/07/10/using-roboguice-to-inject-views-into-a-pojo/';
+        var disqus_url = 'http://blog.timothyandrew.net/blog/2013/07/10/using-roboguice-to-inject-views-into-a-pojo/';
         var disqus_script = 'embed.js';
       
     (function () {
