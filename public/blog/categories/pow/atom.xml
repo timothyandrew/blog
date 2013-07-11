@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: pow | Timothy's Blog]]></title>
+  <link href="http://blog.timothyandrew.net/blog/categories/pow/atom.xml" rel="self"/>
+  <link href="http://blog.timothyandrew.net/"/>
+  <updated>2013-07-11T12:37:19+05:30</updated>
+  <id>http://blog.timothyandrew.net/</id>
+  <author>
+    <name><![CDATA[Timothy Andrew]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Pow Over HTTPS]]></title>
+    <link href="http://blog.timothyandrew.net/blog/2013/07/11/pow-over-https/"/>
+    <updated>2013-07-11T12:26:00+05:30</updated>
+    <id>http://blog.timothyandrew.net/blog/2013/07/11/pow-over-https</id>
+    <content type="html"><![CDATA[<p>I use <a href="http://pow.cx">Pow</a> to manage web servers on my development machine. It works pretty well.
+To start my server, I just hit a URL like <code>http://surveyweb.dev</code>, which starts the server (if it isn't running) and spins it down automatically in 5 minutes.</p>
+
+<p>It doesn't work over HTTPS by default; here's how you get that done.</p>
+
+<p><code>bash
+$ gem install tunnels
+</code></p>
+
+<p>This gem lets you route traffic from one port to another port.</p>
+
+<p>We need to route traffic from port 443, to port 80 (where the Pow server runs).</p>
+
+<p><code>
+$ sudo tunnels 443 80
+</code></p>
+
+<p>While the tunnel is open, I can access <code>https://surveyweb.dev</code> just fine.</p>
+
+<p>Pow also has a feature where I can access my server from another machine on the LAN using a URL like <code>http://surveyweb.192.168.1.10.xip.io/</code> where <code>192.168.1.10</code> is the IP address of my machine. Even with the tunnel open, HTTPS doesn't work for this URL.</p>
+
+<p>We need to start another tunnel:</p>
+
+<p><code>
+$ sudo tunnels 192.168.1.10:443 127.0.0.1:80 # Replace 192.168.1.10 with your IP address
+</code></p>
+
+<p>And now, both URLs work over HTTPS.</p>
+]]></content>
+  </entry>
+  
+</feed>

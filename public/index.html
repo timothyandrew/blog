@@ -9,15 +9,8 @@
   <meta name="author" content="Timothy Andrew">
 
   
-  <meta name="description" content="RoboGuice is great. It lets you get rid of code like: 1
-2
-3
-4
-5
-6
-7
-8
-public class LoginActivity extends Activity { private Button mSignInButtonView &hellip;">
+  <meta name="description" content="I use Pow to manage web servers on my development machine. It works pretty well.
+To start my server, I just hit a URL like http://surveyweb.dev, &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -81,6 +74,72 @@ public class LoginActivity extends Activity { private Button mSignInButtonView &
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/07/11/pow-over-https/">Pow Over HTTPS</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-11T12:26:00+05:30" pubdate data-updated="true">Jul 11<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I use <a href="http://pow.cx">Pow</a> to manage web servers on my development machine. It works pretty well.
+To start my server, I just hit a URL like <code>http://surveyweb.dev</code>, which starts the server (if it isn&#8217;t running) and spins it down automatically in 5 minutes.</p>
+
+<p>It doesn&#8217;t work over HTTPS by default; here&#8217;s how you get that done.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>gem install tunnels
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This gem lets you route traffic from one port to another port.</p>
+
+<p>We need to route traffic from port 443, to port 80 (where the Pow server runs).</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo tunnels 443 80
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>While the tunnel is open, I can access <code>https://surveyweb.dev</code> just fine.</p>
+
+<p>Pow also has a feature where I can access my server from another machine on the LAN using a URL like <code>http://surveyweb.192.168.1.10.xip.io/</code> where <code>192.168.1.10</code> is the IP address of my machine. Even with the tunnel open, HTTPS doesn&#8217;t work for this URL.</p>
+
+<p>We need to start another tunnel:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo tunnels 192.168.1.10:443 127.0.0.1:80 <span class="c"># Replace 192.168.1.10 with your IP address</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And now, both URLs work over HTTPS.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1067,6 +1126,10 @@ On a desktop, though, there&#8217;s no way to switch between pages.</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/07/11/pow-over-https/">Pow Over HTTPS</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/07/10/using-roboguice-to-inject-views-into-a-pojo/">Using RoboGuice to Inject Views Into a POJO</a>
       </li>
     
@@ -1080,10 +1143,6 @@ On a desktop, though, there&#8217;s no way to switch between pages.</p>
     
       <li class="post">
         <a href="/blog/2013/05/01/writing-custom-rspec-matchers/">Writing Custom RSpec Matchers</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/04/28/yaml-serialization-for-delayed-job/">YAML Serialization for Delayed Job</a>
       </li>
     
   </ul>
