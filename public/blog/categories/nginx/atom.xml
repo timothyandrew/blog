@@ -4,7 +4,7 @@
   <title><![CDATA[Category: nginx | Timothy's Blog]]></title>
   <link href="http://blog.timothyandrew.net/blog/categories/nginx/atom.xml" rel="self"/>
   <link href="http://blog.timothyandrew.net/"/>
-  <updated>2013-08-14T00:10:55+05:30</updated>
+  <updated>2013-09-11T13:02:24+05:30</updated>
   <id>http://blog.timothyandrew.net/</id>
   <author>
     <name><![CDATA[Timothy Andrew]]></name>
@@ -57,7 +57,7 @@ Adding a larger image (like this 20MB image) should result in a validation error
 ```
 The server didn't seem to be following this configuration.</p>
 
-<p>After a fair bit of googling and help from the <code>#engineyard</code> IRC channel, this is what we did to fix it.<br/>
+<p>After a fair bit of googling and help from the <code>#engineyard</code> IRC channel, this is what we did to fix it.
 Add the following lines to <code>/data/nginx/nginx.conf</code> inside the <code>http{}</code> block (replacing 300 with the timeout you need).</p>
 
 <p><code>nginx

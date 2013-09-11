@@ -738,7 +738,7 @@ The next best thing is to inject the activity into the POJO (RoboGuice is smart 
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>And this would bomb with an error like <code>Can't dump anonymous Module</code>.<br/>
+<p>And this would bomb with an error like <code>Can't dump anonymous Module</code>.
 After some time getting nowhere, we solved it like this:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -846,7 +846,7 @@ Adding a larger image (like this 20MB image) should result in a validation error
 
 <p>The server didn&#8217;t seem to be following this configuration.</p>
 
-<p>After a fair bit of googling and help from the <code>#engineyard</code> IRC channel, this is what we did to fix it.<br/>
+<p>After a fair bit of googling and help from the <code>#engineyard</code> IRC channel, this is what we did to fix it.
 Add the following lines to <code>/data/nginx/nginx.conf</code> inside the <code>http{}</code> block (replacing 300 with the timeout you need).</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -914,7 +914,7 @@ Add the following lines to <code>/data/nginx/nginx.conf</code> inside the <code>
 </span><span class='line'><span class="k">end</span>
 </span><span class='line'>
 </span><span class='line'><span class="no">Item</span><span class="o">.</span><span class="n">delivered</span><span class="o">.</span><span class="n">to_sql</span>                     <span class="c1"># SELECT &quot;items&quot;.* FROM &quot;items&quot;  WHERE &quot;items&quot;.&quot;delivered&quot; = &#39;t&#39;</span>
-</span><span class='line'><span class="no">Item</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">price</span><span class="p">:</span> <span class="mi">2000</span><span class="p">)</span><span class="o">.</span><span class="n">delivered</span><span class="o">.</span><span class="n">to_sql</span>  <span class="c1"># SELECT &quot;items&quot;.* FROM &quot;items&quot;  WHERE &quot;items&quot;.&quot;price&quot; = 2000 AND &quot;items&quot;.&quot;delivered&quot; = &#39;t&#39; </span>
+</span><span class='line'><span class="no">Item</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">price</span><span class="p">:</span> <span class="mi">2000</span><span class="p">)</span><span class="o">.</span><span class="n">delivered</span><span class="o">.</span><span class="n">to_sql</span>  <span class="c1"># SELECT &quot;items&quot;.* FROM &quot;items&quot;  WHERE &quot;items&quot;.&quot;price&quot; = 2000 AND &quot;items&quot;.&quot;delivered&quot; = &#39;t&#39;</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -946,7 +946,7 @@ Add the following lines to <code>/data/nginx/nginx.conf</code> inside the <code>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>The date is hardcoded in there, and will not be changed until the scope is re-evaluated.<br/>
+<p>The date is hardcoded in there, and will not be changed until the scope is re-evaluated.
 This typically happens only when the server is restarted.</p>
 
 <p>To get around this problem, use a lambda when defining date (or time) based scopes. This will force the evaluation of the scope each time it is <em>called</em>.</p>

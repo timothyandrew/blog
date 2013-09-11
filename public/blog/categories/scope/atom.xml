@@ -4,7 +4,7 @@
   <title><![CDATA[Category: scope | Timothy's Blog]]></title>
   <link href="http://blog.timothyandrew.net/blog/categories/scope/atom.xml" rel="self"/>
   <link href="http://blog.timothyandrew.net/"/>
-  <updated>2013-08-14T00:10:55+05:30</updated>
+  <updated>2013-09-11T13:02:24+05:30</updated>
   <id>http://blog.timothyandrew.net/</id>
   <author>
     <name><![CDATA[Timothy Andrew]]></name>
@@ -52,7 +52,7 @@ class Item
 end
 ```</p>
 
-<p>The date is hardcoded in there, and will not be changed until the scope is re-evaluated.<br/>
+<p>The date is hardcoded in there, and will not be changed until the scope is re-evaluated.
 This typically happens only when the server is restarted.</p>
 
 <p>To get around this problem, use a lambda when defining date (or time) based scopes. This will force the evaluation of the scope each time it is <em>called</em>.</p>

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: html | Timothy's Blog]]></title>
   <link href="http://blog.timothyandrew.net/blog/categories/html/atom.xml" rel="self"/>
   <link href="http://blog.timothyandrew.net/"/>
-  <updated>2013-08-14T00:10:55+05:30</updated>
+  <updated>2013-09-11T13:02:24+05:30</updated>
   <id>http://blog.timothyandrew.net/</id>
   <author>
     <name><![CDATA[Timothy Andrew]]></name>
@@ -86,21 +86,21 @@ padding: 0px;
 
 <p>We've added styles to make each page have a <code>100%</code> height, so that our background-color spans the entire page.</p>
 
-<p>This should allow navigating between the pages by swiping on a mobile device.<br/>
+<p>This should allow navigating between the pages by swiping on a mobile device.
 On a desktop, though, there's no way to switch between pages.</p>
 
 <p>Swipe.js doesn't detect swipe-like events from the mouse, so we need to add buttons to the page for navigation.</p>
 
 <p>```html</p>
 
-<div id="left-arrow" 
+<div id="left-arrow"
      style="font-size: 50px; position: absolute; left: 0%; top: 50%; z-index: 1000;"
      onclick="javascript:window.mySwipe.prev();">
 &lt;
 </div>
 
 
-<div id="right-arrow" 
+<div id="right-arrow"
      style="font-size: 50px; position: absolute; right: 0%; top: 50%; z-index: 1000;"
      onclick="javascript:window.mySwipe.next();">
 &gt;
@@ -114,7 +114,7 @@ On a desktop, though, there's no way to switch between pages.</p>
 <p>Pretty straight-forward so far. There's two problems with this approach, though.</p>
 
 <ul>
-<li>When a page is taller than the height of the viewport, a scrollbar shows up on all pages.<br/>
+<li>When a page is taller than the height of the viewport, a scrollbar shows up on all pages.
 <em>This is not too bad. We could probably live with this.</em></li>
 <li>If we scroll way down on a page, and then switch page, the new page will preserve the scroll position of the previous page. This can be particularly annoying if you have one really tall page and another short page.</li>
 </ul>

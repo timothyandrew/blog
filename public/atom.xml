@@ -4,7 +4,7 @@
   <title><![CDATA[Timothy's Blog]]></title>
   <link href="http://blog.timothyandrew.net/atom.xml" rel="self"/>
   <link href="http://blog.timothyandrew.net/"/>
-  <updated>2013-08-14T00:10:55+05:30</updated>
+  <updated>2013-09-11T13:02:24+05:30</updated>
   <id>http://blog.timothyandrew.net/</id>
   <author>
     <name><![CDATA[Timothy Andrew]]></name>
@@ -18,6 +18,17 @@
     <link href="http://blog.timothyandrew.net/blog/2013/08/13/encrypt-your-emails-on-os-x/"/>
     <updated>2013-08-13T23:14:00+05:30</updated>
     <id>http://blog.timothyandrew.net/blog/2013/08/13/encrypt-your-emails-on-os-x</id>
+    
+      <category term='dev' />
+    
+      <category term='email' />
+    
+      <category term='encryption' />
+    
+      <category term='osx' />
+    
+      <category term='security' />
+    
     <content type="html"><![CDATA[<h3>Introduction</h3>
 
 <p>Now that we know that the American government is <a href="http://en.wikipedia.org/wiki/PRISM_(surveillance_program)">probably reading all our email</a>, we should be encrypting all sensitive emails that we send.
@@ -128,6 +139,17 @@ GPG Suite will automatically decrypt the email and show it to you. It&#8217;s se
     <link href="http://blog.timothyandrew.net/blog/2013/07/11/pow-over-https/"/>
     <updated>2013-07-11T12:26:00+05:30</updated>
     <id>http://blog.timothyandrew.net/blog/2013/07/11/pow-over-https</id>
+    
+      <category term='dev' />
+    
+      <category term='https' />
+    
+      <category term='pow' />
+    
+      <category term='rails' />
+    
+      <category term='ruby' />
+    
     <content type="html"><![CDATA[<p>I use <a href="http://pow.cx">Pow</a> to manage web servers on my development machine. It works pretty well.
 To start my server, I just hit a URL like <code>http://surveyweb.dev</code>, which starts the server (if it isn&#8217;t running) and spins it down automatically in 5 minutes.</p>
 
@@ -167,6 +189,17 @@ To start my server, I just hit a URL like <code>http://surveyweb.dev</code>, whi
     <link href="http://blog.timothyandrew.net/blog/2013/07/10/using-roboguice-to-inject-views-into-a-pojo/"/>
     <updated>2013-07-10T10:50:00+05:30</updated>
     <id>http://blog.timothyandrew.net/blog/2013/07/10/using-roboguice-to-inject-views-into-a-pojo</id>
+    
+      <category term='DI' />
+    
+      <category term='android' />
+    
+      <category term='dev' />
+    
+      <category term='java' />
+    
+      <category term='roboguice' />
+    
     <content type="html"><![CDATA[<p><a href="https://github.com/roboguice/roboguice">RoboGuice</a> is great. It lets you get rid of code like:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -270,6 +303,15 @@ The next best thing is to inject the activity into the POJO (RoboGuice is smart 
     <link href="http://blog.timothyandrew.net/blog/2013/06/24/recursive-postgres-queries/"/>
     <updated>2013-06-24T08:30:00+05:30</updated>
     <id>http://blog.timothyandrew.net/blog/2013/06/24/recursive-postgres-queries</id>
+    
+      <category term='database' />
+    
+      <category term='dev' />
+    
+      <category term='postgres' />
+    
+      <category term='recursion' />
+    
     <content type="html"><![CDATA[<h3>Introduction</h3>
 
 <p>At <a href="http://nilenso.com/">Nilenso</a>, I&#8217;m working on an (<a href="http://github.com/nilenso/ashoka-survey-web">open-source!</a>) app to design and conduct surveys.</p>
@@ -656,6 +698,13 @@ We have to be a little creative here:</p>
     <link href="http://blog.timothyandrew.net/blog/2013/05/09/turning-your-local-git-repo-into-a-remote/"/>
     <updated>2013-05-09T20:18:00+05:30</updated>
     <id>http://blog.timothyandrew.net/blog/2013/05/09/turning-your-local-git-repo-into-a-remote</id>
+    
+      <category term='dev' />
+    
+      <category term='git' />
+    
+      <category term='howto' />
+    
     <content type="html"><![CDATA[<p>Need to pull some changes from a friend&#8217;s local Git repo without having to push to <code>origin</code>? This post will show you how to do that.</p>
 
 <p>You can access a local Git repo using SSH, but setting up keys and such will probably take some time. For a quick-and-dirty solution, HTTP is <em>much</em> easier.</p>
@@ -709,6 +758,19 @@ We have to be a little creative here:</p>
     <link href="http://blog.timothyandrew.net/blog/2013/05/01/writing-custom-rspec-matchers/"/>
     <updated>2013-05-01T11:56:00+05:30</updated>
     <id>http://blog.timothyandrew.net/blog/2013/05/01/writing-custom-rspec-matchers</id>
+    
+      <category term='dev' />
+    
+      <category term='matcher' />
+    
+      <category term='rails' />
+    
+      <category term='rspec' />
+    
+      <category term='ruby' />
+    
+      <category term='tdd' />
+    
     <content type="html"><![CDATA[<p>RSpec matchers let you abstract away common assertions in your test code.</p>
 
 <p>For example, we recently had a spec file with a bunch of lines that looked like this:</p>
@@ -810,6 +872,19 @@ We have to be a little creative here:</p>
     <link href="http://blog.timothyandrew.net/blog/2013/04/28/yaml-serialization-for-delayed-job/"/>
     <updated>2013-04-28T08:08:00+05:30</updated>
     <id>http://blog.timothyandrew.net/blog/2013/04/28/yaml-serialization-for-delayed-job</id>
+    
+      <category term='delayed job' />
+    
+      <category term='dev' />
+    
+      <category term='rails' />
+    
+      <category term='ruby' />
+    
+      <category term='serialization' />
+    
+      <category term='yaml' />
+    
     <content type="html"><![CDATA[<p>When we first moved excel generation off to a delayed job on <a href="http://github.com/c42/survey-web">survey-web</a>, we had code that looked like this:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -819,7 +894,7 @@ We have to be a little creative here:</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>And this would bomb with an error like <code>Can't dump anonymous Module</code>.<br/>
+<p>And this would bomb with an error like <code>Can't dump anonymous Module</code>.
 After some time getting nowhere, we solved it like this:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -860,6 +935,23 @@ After some time getting nowhere, we solved it like this:</p>
     <link href="http://blog.timothyandrew.net/blog/2013/04/12/changing-the-server-timeout-on-engineyard/"/>
     <updated>2013-04-12T22:29:00+05:30</updated>
     <id>http://blog.timothyandrew.net/blog/2013/04/12/changing-the-server-timeout-on-engineyard</id>
+    
+      <category term='dev' />
+    
+      <category term='engineyard' />
+    
+      <category term='nginx' />
+    
+      <category term='rails' />
+    
+      <category term='ruby' />
+    
+      <category term='server' />
+    
+      <category term='timeout' />
+    
+      <category term='unicorn' />
+    
     <content type="html"><![CDATA[<p>While working on <a href="http://github.com/c42/survey-web">survey-web</a> today, we were stuck for a really long time trying to figure out this problem.</p>
 
 <p>Unless otherwise specified, image uploads while adding a response are capped at 5MB per image.
@@ -900,7 +992,7 @@ Adding a larger image (like this 20MB image) should result in a validation error
 
 <p>The server didn&#8217;t seem to be following this configuration.</p>
 
-<p>After a fair bit of googling and help from the <code>#engineyard</code> IRC channel, this is what we did to fix it.<br/>
+<p>After a fair bit of googling and help from the <code>#engineyard</code> IRC channel, this is what we did to fix it.
 Add the following lines to <code>/data/nginx/nginx.conf</code> inside the <code>http{}</code> block (replacing 300 with the timeout you need).</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -928,6 +1020,13 @@ Add the following lines to <code>/data/nginx/nginx.conf</code> inside the <code>
     <link href="http://blog.timothyandrew.net/blog/2013/04/08/use-lambdas-for-date-based-rails-scopes/"/>
     <updated>2013-04-08T00:26:00+05:30</updated>
     <id>http://blog.timothyandrew.net/blog/2013/04/08/use-lambdas-for-date-based-rails-scopes</id>
+    
+      <category term='dev' />
+    
+      <category term='rails' />
+    
+      <category term='scope' />
+    
     <content type="html"><![CDATA[<p>A scope allows you to specify an ARel query that can be used as a method call to the model (or association objects).</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -941,7 +1040,7 @@ Add the following lines to <code>/data/nginx/nginx.conf</code> inside the <code>
 </span><span class='line'><span class="k">end</span>
 </span><span class='line'>
 </span><span class='line'><span class="no">Item</span><span class="o">.</span><span class="n">delivered</span><span class="o">.</span><span class="n">to_sql</span>                     <span class="c1"># SELECT &quot;items&quot;.* FROM &quot;items&quot;  WHERE &quot;items&quot;.&quot;delivered&quot; = &#39;t&#39;</span>
-</span><span class='line'><span class="no">Item</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">price</span><span class="p">:</span> <span class="mi">2000</span><span class="p">)</span><span class="o">.</span><span class="n">delivered</span><span class="o">.</span><span class="n">to_sql</span>  <span class="c1"># SELECT &quot;items&quot;.* FROM &quot;items&quot;  WHERE &quot;items&quot;.&quot;price&quot; = 2000 AND &quot;items&quot;.&quot;delivered&quot; = &#39;t&#39; </span>
+</span><span class='line'><span class="no">Item</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">price</span><span class="p">:</span> <span class="mi">2000</span><span class="p">)</span><span class="o">.</span><span class="n">delivered</span><span class="o">.</span><span class="n">to_sql</span>  <span class="c1"># SELECT &quot;items&quot;.* FROM &quot;items&quot;  WHERE &quot;items&quot;.&quot;price&quot; = 2000 AND &quot;items&quot;.&quot;delivered&quot; = &#39;t&#39;</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -973,7 +1072,7 @@ Add the following lines to <code>/data/nginx/nginx.conf</code> inside the <code>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>The date is hardcoded in there, and will not be changed until the scope is re-evaluated.<br/>
+<p>The date is hardcoded in there, and will not be changed until the scope is re-evaluated.
 This typically happens only when the server is restarted.</p>
 
 <p>To get around this problem, use a lambda when defining date (or time) based scopes. This will force the evaluation of the scope each time it is <em>called</em>.</p>
@@ -994,6 +1093,13 @@ This typically happens only when the server is restarted.</p>
     <link href="http://blog.timothyandrew.net/blog/2013/04/06/using-asana-from-a-cheap-nokia-phone/"/>
     <updated>2013-04-06T23:29:00+05:30</updated>
     <id>http://blog.timothyandrew.net/blog/2013/04/06/using-asana-from-a-cheap-nokia-phone</id>
+    
+      <category term='asana' />
+    
+      <category term='mobile' />
+    
+      <category term='org' />
+    
     <content type="html"><![CDATA[<p>I love <a href="http://asana.com/">Asana</a>. Its made me a lot more organized than I used to be.</p>
 
 <p>I&#8217;d love to be able to check my tasks when I&#8217;m not at a computer, but my phone looks like this.</p>
@@ -1100,6 +1206,19 @@ And that&#8217;s pretty much all the code that&#8217;s necessary.</p>
     <link href="http://blog.timothyandrew.net/blog/2013/04/05/using-swipe-dot-js-to-swipe-between-pages-of-a-web-app/"/>
     <updated>2013-04-05T21:45:00+05:30</updated>
     <id>http://blog.timothyandrew.net/blog/2013/04/05/using-swipe-dot-js-to-swipe-between-pages-of-a-web-app</id>
+    
+      <category term='dev' />
+    
+      <category term='howto' />
+    
+      <category term='html' />
+    
+      <category term='js' />
+    
+      <category term='mobile' />
+    
+      <category term='swipe.js' />
+    
     <content type="html"><![CDATA[<p>I was working with <a href="http://deobald.ca/">Steven</a> on <a href="http://github.com/deobald/jok">Jok</a> today.</p>
 
 <p>We were converting a two page (well 3, actually) page web application into a single page application that let you swipe between pages on mobile device but worked the same on a desktop browser.</p>
@@ -1193,7 +1312,7 @@ And that&#8217;s pretty much all the code that&#8217;s necessary.</p>
 
 <p>We&#8217;ve added styles to make each page have a <code>100%</code> height, so that our background-color spans the entire page.</p>
 
-<p>This should allow navigating between the pages by swiping on a mobile device.<br/>
+<p>This should allow navigating between the pages by swiping on a mobile device.
 On a desktop, though, there&#8217;s no way to switch between pages.</p>
 
 <p>Swipe.js doesn&#8217;t detect swipe-like events from the mouse, so we need to add buttons to the page for navigation.</p>
@@ -1226,7 +1345,7 @@ On a desktop, though, there&#8217;s no way to switch between pages.</p>
 <p>Pretty straight-forward so far. There&#8217;s two problems with this approach, though.</p>
 
 <ul>
-<li>When a page is taller than the height of the viewport, a scrollbar shows up on all pages.<br/>
+<li>When a page is taller than the height of the viewport, a scrollbar shows up on all pages.
 <em>This is not too bad. We could probably live with this.</em></li>
 <li>If we scroll way down on a page, and then switch page, the new page will preserve the scroll position of the previous page. This can be particularly annoying if you have one really tall page and another short page.</li>
 </ul>
