@@ -3,7 +3,7 @@ layout: post
 title: "Changing the Server Timeout on EngineYard"
 date: 2013-04-12 22:29
 comments: true
-categories: [engineyard, rails, unicorn, timeout, ruby, server, nginx]
+categories: [engineyard, rails, unicorn, timeout, ruby, server, nginx, dev]
 ---
 
 While working on [survey-web](http://github.com/c42/survey-web) today, we were stuck for a really long time trying to figure out this problem.
@@ -37,7 +37,7 @@ timeout 180
 ```
 The server didn't seem to be following this configuration.
 
-After a fair bit of googling and help from the `#engineyard` IRC channel, this is what we did to fix it.  
+After a fair bit of googling and help from the `#engineyard` IRC channel, this is what we did to fix it.
 Add the following lines to `/data/nginx/nginx.conf` inside the `http{}` block (replacing 300 with the timeout you need).
 
 ```nginx

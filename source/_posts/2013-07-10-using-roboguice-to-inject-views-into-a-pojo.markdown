@@ -3,13 +3,13 @@ layout: post
 title: "Using RoboGuice to Inject Views Into a POJO"
 date: 2013-07-10 10:50
 comments: true
-categories: [roboguice, android, DI, java]
+categories: [roboguice, android, DI, java, dev]
 ---
 
 [RoboGuice](https://github.com/roboguice/roboguice) is great. It lets you get rid of code like:
 
 ```java
-public class LoginActivity extends Activity {    
+public class LoginActivity extends Activity {
     private Button mSignInButtonView;
 
     @Override
@@ -58,10 +58,10 @@ public class LoginView {
     @Inject Activity activity; // This gets injected with the correct instance of LoginActivity
     private Button buttonView;
     private EditText editText;
-    
+
     public void onCreate() {
         buttonView = activity.findViewById(R.id.my_button);
-        editText = activity.findViewById(R.id.my_edit_text);        
+        editText = activity.findViewById(R.id.my_edit_text);
     }
 }
 ```

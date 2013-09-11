@@ -3,7 +3,7 @@ layout: post
 title: "Pow Over HTTPS"
 date: 2013-07-11 12:26
 comments: true
-categories: [pow, rails, ruby, https]
+categories: [pow, rails, ruby, https, dev]
 ---
 
 I use [Pow](http://pow.cx) to manage web servers on my development machine. It works pretty well.

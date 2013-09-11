@@ -3,7 +3,7 @@ layout: post
 title: "Encrypt Your Emails on OS X"
 date: 2013-08-13 23:14
 comments: true
-categories: [osx, email, encryption, security]
+categories: [osx, email, encryption, security, dev]
 ---
 
 ### Introduction

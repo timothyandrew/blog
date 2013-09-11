@@ -3,7 +3,7 @@ layout: post
 title: "YAML Serialization for Delayed Job"
 date: 2013-04-28 08:08
 comments: true
-categories: [ruby, delayed job, yaml, serialization, rails]
+categories: [ruby, delayed job, yaml, serialization, rails, dev]
 ---
 
 When we first moved excel generation off to a delayed job on [survey-web](http://github.com/c42/survey-web), we had code that looked like this:
@@ -13,7 +13,7 @@ responses = Response.where(:foo => bar)
 Delayed::Job.enqueue(MyCustomJob.new(responses))
 ```
 
-And this would bomb with an error like `Can't dump anonymous Module`.  
+And this would bomb with an error like `Can't dump anonymous Module`.
 After some time getting nowhere, we solved it like this:
 
 ```ruby

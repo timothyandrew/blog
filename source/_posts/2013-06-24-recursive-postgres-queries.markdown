@@ -3,7 +3,7 @@ layout: post
 title: "Recursive Postgres Queries"
 date: 2013-06-24 08:30
 comments: true
-categories: [database, postgres, recursion]
+categories: [database, postgres, recursion, dev]
 ---
 
 ### Introduction
@@ -54,7 +54,7 @@ For large surveys with 5+ levels of nesting, and more than a hundred questions, 
 
 I've used gems like [`awesome_nested_set`](https://github.com/collectiveidea/awesome_nested_set) before, but as far as I could find, none of them supported fetching results across multiple models.
 
-Then I stumbled on [a page](http://www.postgresql.org/docs/9.1/static/queries-with.html) describing PostgreSQL's support for recursive queries! That seemed perfect. 
+Then I stumbled on [a page](http://www.postgresql.org/docs/9.1/static/queries-with.html) describing PostgreSQL's support for recursive queries! That seemed perfect.
 
 Let's solve this particular problem using recursive queries. (My understanding of this is still very basic, so please don't take my word for any of this)
 

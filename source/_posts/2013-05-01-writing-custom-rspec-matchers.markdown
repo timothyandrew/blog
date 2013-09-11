@@ -3,7 +3,7 @@ layout: post
 title: "Writing Custom RSpec Matchers"
 date: 2013-05-01 11:56
 comments: true
-categories: [ruby, rspec, matcher, tdd, rails]
+categories: [ruby, rspec, matcher, tdd, rails, dev]
 ---
 
 RSpec matchers let you abstract away common assertions in your test code.
@@ -14,7 +14,7 @@ For example, we recently had a spec file with a bunch of lines that looked like 
 worksheet.rows[0].cells.map(&:value).should include "Foo"
 ```
 
-Which tests if the excel file we're generating (using [axlsx](https://github.com/randym/axlsx)) includes `Foo` in the header row.  
+Which tests if the excel file we're generating (using [axlsx](https://github.com/randym/axlsx)) includes `Foo` in the header row.
 
 That isn't very neat. What if we replace it with this?
 
@@ -62,14 +62,14 @@ RSpec::Matchers.define :have_cell do |expected|
   chain :in_row do |index|
     @index = index
   end
-  
+
   failure_message_for_should do |actual|
     "Expected #{actual} to include #{expected} at row #{@index}."
   end
 end
 ```
 
-We first store the argument passed in to `in_row` as an instance variable, and then access it in the main `have_cell` matcher.  
+We first store the argument passed in to `in_row` as an instance variable, and then access it in the main `have_cell` matcher.
 
 
 The example also includes a custom error message handler, which properly formats an error message if the assertion fails.

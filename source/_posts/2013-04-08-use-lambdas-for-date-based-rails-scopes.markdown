@@ -3,7 +3,7 @@ layout: post
 title: "Use Lambdas for Date-based Rails Scopes"
 date: 2013-04-08 00:26
 comments: true
-categories: [rails, scope]
+categories: [rails, scope, dev]
 ---
 
 A scope allows you to specify an ARel query that can be used as a method call to the model (or association objects).
@@ -14,7 +14,7 @@ class Item
 end
 
 Item.delivered.to_sql                     # SELECT "items".* FROM "items"  WHERE "items"."delivered" = 't'
-Item.where(price: 2000).delivered.to_sql  # SELECT "items".* FROM "items"  WHERE "items"."price" = 2000 AND "items"."delivered" = 't' 
+Item.where(price: 2000).delivered.to_sql  # SELECT "items".* FROM "items"  WHERE "items"."price" = 2000 AND "items"."delivered" = 't'
 ```
 
 There's a problem if we try using a scope for a relative date, though.
@@ -37,7 +37,7 @@ class Item
 end
 ```
 
-The date is hardcoded in there, and will not be changed until the scope is re-evaluated.  
+The date is hardcoded in there, and will not be changed until the scope is re-evaluated.
 This typically happens only when the server is restarted.
 
 
