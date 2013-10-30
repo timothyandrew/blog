@@ -4,70 +4,76 @@
         <loc>
             http://blog.timothyandrew.net/blog/2013/04/05/using-swipe-dot-js-to-swipe-between-pages-of-a-web-app/
         </loc>
-        <lastmod>2013-09-11T13:00:02+05:30</lastmod>
+        <lastmod>2013-10-30T15:22:39+05:30</lastmod>
     </url>
     <url>
         <loc>
             http://blog.timothyandrew.net/blog/2013/04/06/using-asana-from-a-cheap-nokia-phone/
         </loc>
-        <lastmod>2013-04-07T01:13:49+05:30</lastmod>
+        <lastmod>2013-10-30T15:22:39+05:30</lastmod>
     </url>
     <url>
         <loc>
             http://blog.timothyandrew.net/blog/2013/04/08/use-lambdas-for-date-based-rails-scopes/
         </loc>
-        <lastmod>2013-09-11T13:00:07+05:30</lastmod>
+        <lastmod>2013-10-30T15:22:39+05:30</lastmod>
     </url>
     <url>
         <loc>
             http://blog.timothyandrew.net/blog/2013/04/12/changing-the-server-timeout-on-engineyard/
         </loc>
-        <lastmod>2013-09-11T13:00:10+05:30</lastmod>
+        <lastmod>2013-10-30T15:22:39+05:30</lastmod>
     </url>
     <url>
         <loc>
             http://blog.timothyandrew.net/blog/2013/04/28/yaml-serialization-for-delayed-job/
         </loc>
-        <lastmod>2013-09-11T13:00:20+05:30</lastmod>
+        <lastmod>2013-10-30T15:22:39+05:30</lastmod>
     </url>
     <url>
         <loc>http://blog.timothyandrew.net/blog/2013/05/01/writing-custom-rspec-matchers/</loc>
-        <lastmod>2013-09-11T13:00:24+05:30</lastmod>
+        <lastmod>2013-10-30T15:22:39+05:30</lastmod>
     </url>
     <url>
         <loc>
             http://blog.timothyandrew.net/blog/2013/05/09/turning-your-local-git-repo-into-a-remote/
         </loc>
-        <lastmod>2013-09-11T13:00:27+05:30</lastmod>
+        <lastmod>2013-10-30T15:22:39+05:30</lastmod>
     </url>
     <url>
         <loc>http://blog.timothyandrew.net/blog/2013/06/24/recursive-postgres-queries/</loc>
-        <lastmod>2013-09-11T13:00:31+05:30</lastmod>
+        <lastmod>2013-10-30T15:22:39+05:30</lastmod>
     </url>
     <url>
         <loc>
             http://blog.timothyandrew.net/blog/2013/07/10/using-roboguice-to-inject-views-into-a-pojo/
         </loc>
-        <lastmod>2013-09-11T13:00:34+05:30</lastmod>
+        <lastmod>2013-10-30T15:22:39+05:30</lastmod>
     </url>
     <url>
         <loc>http://blog.timothyandrew.net/blog/2013/07/11/pow-over-https/</loc>
-        <lastmod>2013-09-11T13:00:37+05:30</lastmod>
+        <lastmod>2013-10-30T15:22:39+05:30</lastmod>
     </url>
     <url>
         <loc>http://blog.timothyandrew.net/blog/2013/08/13/encrypt-your-emails-on-os-x/</loc>
-        <lastmod>2013-09-11T13:00:40+05:30</lastmod>
+        <lastmod>2013-10-30T15:22:39+05:30</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://blog.timothyandrew.net/blog/2013/10/30/how-to-disable-the-google-hangouts-menu-bar-icon-on-os-x/
+        </loc>
+        <lastmod>2013-10-30T15:23:11+05:30</lastmod>
     </url>
     <url>
         <loc>http://blog.timothyandrew.net/blog/archives/</loc>
-        <lastmod>2013-09-11T13:00:40+05:30</lastmod>
+        <lastmod>2013-10-30T15:23:11+05:30</lastmod>
     </url>
     <url>
         <loc>http://blog.timothyandrew.net/</loc>
-        <lastmod>2013-09-11T13:00:40+05:30</lastmod>
+        <lastmod>2013-10-30T15:23:11+05:30</lastmod>
     </url>
     <url>
         <loc>http://blog.timothyandrew.net/robots.txt</loc>
-        <lastmod>2013-04-05T23:49:14+05:30</lastmod>
+        <lastmod>2013-10-30T15:22:39+05:30</lastmod>
     </url>
 </urlset>

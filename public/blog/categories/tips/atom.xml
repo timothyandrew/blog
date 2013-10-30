@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: tips | Timothy's Blog]]></title>
+  <link href="http://blog.timothyandrew.net/blog/categories/tips/atom.xml" rel="self"/>
+  <link href="http://blog.timothyandrew.net/"/>
+  <updated>2013-10-30T15:24:50+05:30</updated>
+  <id>http://blog.timothyandrew.net/</id>
+  <author>
+    <name><![CDATA[Timothy Andrew]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[How to Disable the Google Hangouts Menu Bar Icon on OS X]]></title>
+    <link href="http://blog.timothyandrew.net/blog/2013/10/30/how-to-disable-the-google-hangouts-menu-bar-icon-on-os-x/"/>
+    <updated>2013-10-30T15:10:00+05:30</updated>
+    <id>http://blog.timothyandrew.net/blog/2013/10/30/how-to-disable-the-google-hangouts-menu-bar-icon-on-os-x</id>
+    <content type="html"><![CDATA[<p>This has been annoying me for weeks now. Google Hangouts would place an menu-bar icon for each instance of Chrome I had running. Repeatedly quitting them didn't have much effect; they'd keep coming back.</p>
+
+<p><img src="/images/hangouts/menubar.png" alt="Menu Bar Screenshot" /></p>
+
+<p>Luckily, there's an easy way to turn off the menu-bar icons.</p>
+
+<ul>
+<li>Open Chrome</li>
+<li>Menu Bar > Chrome > Preferences</li>
+<li>Click on Extensions, scroll down to Hangouts, and click on <em>Options</em></li>
+<li>Uncheck <em>Show system tray icon</em></li>
+<li>Click <em>OK</em></li>
+</ul>
+
+
+<p>And that's it.</p>
+]]></content>
+  </entry>
+  
+</feed>
