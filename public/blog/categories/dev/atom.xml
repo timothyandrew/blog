@@ -4,7 +4,7 @@
   <title><![CDATA[Category: dev | Timothy's Blog]]></title>
   <link href="http://blog.timothyandrew.net/blog/categories/dev/atom.xml" rel="self"/>
   <link href="http://blog.timothyandrew.net/"/>
-  <updated>2013-10-30T15:24:50+05:30</updated>
+  <updated>2013-10-30T15:26:55+05:30</updated>
   <id>http://blog.timothyandrew.net/</id>
   <author>
     <name><![CDATA[Timothy Andrew]]></name>
@@ -12,6 +12,30 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[How to Disable the Google Hangouts Menu Bar Icon on OS X]]></title>
+    <link href="http://blog.timothyandrew.net/blog/2013/10/30/how-to-disable-the-google-hangouts-menu-bar-icon-on-os-x/"/>
+    <updated>2013-10-30T15:10:00+05:30</updated>
+    <id>http://blog.timothyandrew.net/blog/2013/10/30/how-to-disable-the-google-hangouts-menu-bar-icon-on-os-x</id>
+    <content type="html"><![CDATA[<p>This has been annoying me for weeks now. Google Hangouts would place an menu-bar icon for each instance of Chrome I had running. Repeatedly quitting them didn't have much effect; they'd keep coming back.</p>
+
+<p><img src="/images/hangouts/menubar.png" alt="Menu Bar Screenshot" /></p>
+
+<p>Luckily, there's an easy way to turn off the menu-bar icons.</p>
+
+<ul>
+<li>Open Chrome</li>
+<li>Menu Bar > Chrome > Preferences</li>
+<li>Click on Extensions, scroll down to Hangouts, and click on <em>Options</em></li>
+<li>Uncheck <em>Show system tray icon</em></li>
+<li>Click <em>OK</em></li>
+</ul>
+
+
+<p>And that's it.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Encrypt Your Emails on OS X]]></title>
@@ -528,50 +552,6 @@ pry(main)> Benchmark.ms { 5.times { Survey.find(9).sub_questions_using_recursive
 <p>31x faster? Not bad.</p>
 
 <p><a href="/images/recursive-pg/not-bad.jpg"><img src="/images/recursive-pg/not-bad.jpg" alt="Not bad" /></a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Turning Your Local Git Repo Into a Remote]]></title>
-    <link href="http://blog.timothyandrew.net/blog/2013/05/09/turning-your-local-git-repo-into-a-remote/"/>
-    <updated>2013-05-09T20:18:00+05:30</updated>
-    <id>http://blog.timothyandrew.net/blog/2013/05/09/turning-your-local-git-repo-into-a-remote</id>
-    <content type="html"><![CDATA[<p>Need to pull some changes from a friend's local Git repo without having to push to <code>origin</code>? This post will show you how to do that.</p>
-
-<p>You can access a local Git repo using SSH, but setting up keys and such will probably take some time. For a quick-and-dirty solution, HTTP is <em>much</em> easier.</p>
-
-<p>On the machine you want to use as the server, navigate to your project and then into the <code>.git</code> directory.</p>
-
-<p><code>bash
-$ cd /path/to/project
-$ cd .git
-</code></p>
-
-<p>Stand up a HTTP server using Python's <code>SimpleHTTPServer</code> module. You can use any port number you like.</p>
-
-<p><code>bash
-$ python -m SimpleHTTPServer 5000
-</code></p>
-
-<p>You'll need the IP address of this machine as well. (Use <code>ifconfig</code>)</p>
-
-<p>Make sure you can access the python server from a browser on the client machine. You should be able to see something like this at <code>http://ip.address:5000/</code></p>
-
-<p><img src="images/2013-05-09-python-server.png" alt="Python Server Browser Screenshot" /></p>
-
-<p>On the client, you should be now able to access the git repo over HTTP as though it were a normal git remote.</p>
-
-<p><code>bash
-$ git ls-remote http://ip.address:5000
-$ git pull http://ip.address:5000 master
-</code></p>
-
-<p>Add it as a remote to avoid typing out the entire IP each time.</p>
-
-<p><code>bash
-$ git remote add http://ip.address:5000 local-foo
-$ git pull local-foo master
-</code></p>
 ]]></content>
   </entry>
   
